@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.codice.alliance.nsili</groupId>
         <artifactId>nsili</artifactId>
-        <version>0.1-2016-05-21T124254Z</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>catalog-nsili-common</artifactId>
