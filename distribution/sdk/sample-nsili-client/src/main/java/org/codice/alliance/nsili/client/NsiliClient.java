@@ -11,7 +11,7 @@
  * is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.alliance.nsili.mockserver.client;
+package org.codice.alliance.nsili.client;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -40,19 +40,6 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.helpers.IOUtils;
-import org.codice.alliance.nsili.common.GIAS.ImageSpec;
-import org.codice.alliance.nsili.common.GIAS.ImageSpecHelper;
-import org.codice.alliance.nsili.common.GIAS.SupportDataEncoding;
-import org.omg.CORBA.Any;
-import org.omg.CORBA.IntHolder;
-import org.omg.CORBA.ORB;
-import org.omg.CORBA.TCKind;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.POAPackage.ObjectAlreadyActive;
-import org.omg.PortableServer.POAPackage.ObjectNotActive;
-import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
-import org.omg.PortableServer.POAPackage.WrongPolicy;
-
 import org.codice.alliance.nsili.common.CB.Callback;
 import org.codice.alliance.nsili.common.CB.CallbackHelper;
 import org.codice.alliance.nsili.common.CB.CallbackPOA;
@@ -72,6 +59,8 @@ import org.codice.alliance.nsili.common.GIAS.GeoRegionType;
 import org.codice.alliance.nsili.common.GIAS.GetParametersRequest;
 import org.codice.alliance.nsili.common.GIAS.GetRelatedFilesRequest;
 import org.codice.alliance.nsili.common.GIAS.HitCountRequest;
+import org.codice.alliance.nsili.common.GIAS.ImageSpec;
+import org.codice.alliance.nsili.common.GIAS.ImageSpecHelper;
 import org.codice.alliance.nsili.common.GIAS.Library;
 import org.codice.alliance.nsili.common.GIAS.LibraryDescription;
 import org.codice.alliance.nsili.common.GIAS.LibraryHelper;
@@ -97,6 +86,7 @@ import org.codice.alliance.nsili.common.GIAS.StandingQueryMgr;
 import org.codice.alliance.nsili.common.GIAS.StandingQueryMgrHelper;
 import org.codice.alliance.nsili.common.GIAS.SubmitQueryRequest;
 import org.codice.alliance.nsili.common.GIAS.SubmitStandingQueryRequest;
+import org.codice.alliance.nsili.common.GIAS.SupportDataEncoding;
 import org.codice.alliance.nsili.common.GIAS.TailoringSpec;
 import org.codice.alliance.nsili.common.GIAS.ValidationResults;
 import org.codice.alliance.nsili.common.NsilCorbaExceptionUtil;
@@ -125,6 +115,15 @@ import org.codice.alliance.nsili.common.UCO.Time;
 import org.codice.alliance.nsili.common.UID.Product;
 import org.codice.alliance.nsili.common.UID.ProductHelper;
 import org.codice.alliance.nsili.transformer.DAGConverter;
+import org.omg.CORBA.Any;
+import org.omg.CORBA.IntHolder;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.TCKind;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAPackage.ObjectAlreadyActive;
+import org.omg.PortableServer.POAPackage.ObjectNotActive;
+import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import ddf.catalog.data.Metacard;
 import ddf.catalog.resource.impl.URLResourceReader;

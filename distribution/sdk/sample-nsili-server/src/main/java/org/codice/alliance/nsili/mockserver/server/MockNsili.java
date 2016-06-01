@@ -13,11 +13,6 @@
  */
 package org.codice.alliance.nsili.mockserver.server;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.codice.alliance.nsili.mockserver.impl.LibraryImpl;
 import org.omg.CORBA.ORB;
@@ -27,6 +22,11 @@ import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 public class MockNsili {
 
@@ -42,14 +42,20 @@ public class MockNsili {
 
         int corbaPort = Integer.parseInt(ports[1]);
 
-        runMockWebServer(webPort);
+        startWebServer(webPort);
 
+        startMockServer(corbaPort, System.getProperty("user.dir") + "/target/ior.txt");
+
+        System.exit(0);
+    }
+
+    public static void startMockServer(int corbaPort, String iorFilePath) {
         ORB orb = null;
 
         try {
-            orb = getOrbForServer(corbaPort);
-            orb.run();
+            orb = getOrbForServer(corbaPort, iorFilePath);
             System.out.println("Server Started...");
+            orb.run(); // blocks the current thread until the ORB is shutdown
         } catch (InvalidName | AdapterInactive | WrongPolicy | ServantNotActive e) {
             System.out.println("Unable to start the CORBA server.");
             e.printStackTrace();
@@ -60,22 +66,18 @@ public class MockNsili {
 
         if (orb != null) {
             orb.destroy();
-
         }
-
-        System.exit(0);
-
     }
 
-    private static void runMockWebServer(int port) {
+    public static void startWebServer(int port) {
         JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
         sf.setResourceClasses(MockWebService.class);
         sf.setAddress("http://localhost:" + port + "/");
         sf.create();
     }
 
-    private static ORB getOrbForServer(int port)
-            throws InvalidName, AdapterInactive, WrongPolicy, ServantNotActive, IOException {
+    private static ORB getOrbForServer(int port, String iorFilePath)
+        throws InvalidName, AdapterInactive, WrongPolicy, ServantNotActive, IOException {
 
         java.util.Properties props = new java.util.Properties();
         props.put("org.omg.CORBA.ORBInitialPort", port);
@@ -83,21 +85,17 @@ public class MockNsili {
 
         POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
 
-        rootPOA.the_POAManager()
-                .activate();
+        rootPOA.the_POAManager().activate();
 
         org.omg.CORBA.Object objref = rootPOA.servant_to_reference(new LibraryImpl(rootPOA));
 
-        Writer writer = new OutputStreamWriter(new FileOutputStream(
-                System.getProperty("user.dir") + "/target/ior.txt"), "UTF-8");
+        Writer writer = new OutputStreamWriter(new FileOutputStream(iorFilePath), "UTF-8");
 
         writer.write(orb.object_to_string(objref));
         writer.close();
 
-        rootPOA.the_POAManager()
-                .activate();
+        rootPOA.the_POAManager().activate();
 
         return orb;
-
     }
 }

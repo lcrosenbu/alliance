@@ -11,8 +11,11 @@
  * is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.alliance.nsili.mockserver.client;
+package org.codice.alliance.nsili.client;
 
+import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
+import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.api.core.ResourceConfig;
 import org.codice.alliance.nsili.common.GIAS.PackageElement;
 import org.codice.alliance.nsili.common.GIAS.Query;
 import org.codice.alliance.nsili.common.NsilCorbaExceptionUtil;
@@ -23,10 +26,6 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
-
-import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
 
 public class Client {
     private HttpServer server = null;

@@ -21,8 +21,8 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <name>Alliance :: Distribution :: SDK :: NSILI Server</name>
-    <artifactId>sample-nsili-server</artifactId>
+    <name>Alliance :: Distribution :: SDK :: NSILI Client</name>
+    <artifactId>sample-nsili-client</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -30,11 +30,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>0.9.1</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxrs</artifactId>
@@ -54,6 +49,21 @@
             <groupId>org.codice.alliance.nsili</groupId>
             <artifactId>catalog-nsili-common</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.alliance.nsili</groupId>
+            <artifactId>catalog-nsili-transformer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-grizzly2</artifactId>
+            <version>1.19</version>
         </dependency>
     </dependencies>
 
@@ -123,7 +133,7 @@
     </build>
     <profiles>
         <profile>
-            <id>corba.server</id>
+            <id>corba.client</id>
             <build>
                 <defaultGoal>test</defaultGoal>
                 <plugins>
@@ -138,7 +148,7 @@
                                 </goals>
                                 <configuration>
                                     <mainClass>
-                                        org.codice.alliance.nsili.mockserver.server.MockNsili
+                                        org.codice.alliance.nsili.client.Client
                                     </mainClass>
                                     <classpathScope>test</classpathScope>
                                     <arguments>
