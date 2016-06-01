@@ -18,20 +18,29 @@ import java.io.File;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("data")
 public class MockWebService {
 
-    private static final String PRODUCT_RELATIVE_PATH = "/src/main/java/org/codice/alliance/nsili/mockserver/data/product.jpg";
+    private static final String PRODUCT_RELATIVE_PATH = "./src/main/java/org/codice/alliance/nsili/mockserver/data/product.jpg";
 
-    private static final String IOR_RELATIVE_PATH = "/target/ior.txt";
+    private MockNsili mockNsili;
+
+    /**
+     * Default constructor needed only in the context of integration tests outside
+     * the use of dependency injection. Instantiated by reflection in @link{MockNsili}
+     */
+    public MockWebService() {
+        this.mockNsili = MockNsili.getInstance();
+    }
 
     @GET
     @Path("product.jpg")
-    @Produces("text/plain")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getProductFile() {
-        File file = new File(System.getProperty("user.dir") + PRODUCT_RELATIVE_PATH);
+        File file = new File(PRODUCT_RELATIVE_PATH);
         Response.ResponseBuilder response = Response.ok(file);
         response.header("Content-Disposition", "attachment; filename=product.jpg");
         return response.build();
@@ -39,10 +48,10 @@ public class MockWebService {
 
     @GET
     @Path("ior.txt")
-    @Produces("text/plain")
+    @Produces(MediaType.TEXT_PLAIN)
     public Response getIORFile() {
-        File file = new File(System.getProperty("user.dir") + IOR_RELATIVE_PATH);
-        Response.ResponseBuilder response = Response.ok(file);
+        String responseStr = mockNsili.getIorString() + "\n";
+        Response.ResponseBuilder response = Response.ok(responseStr);
         return response.build();
     }
 }

@@ -15,34 +15,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.codice.alliance</groupId>
         <artifactId>distribution</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-
-    <artifactId>sdk</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.codice.alliance.test</groupId>
+    <artifactId>test</artifactId>
     <packaging>pom</packaging>
-    <groupId>org.codice.alliance.distribution</groupId>
-    <name>Alliance :: Distribution :: SDK</name>
-    <properties>
-
-    </properties>
-
+    <name>Alliance :: Test</name>
     <modules>
-        <module>sample-nsili-server</module>
-        <module>sample-nsili-client</module>
+        <module>itests</module>
     </modules>
+    <repositories>
+        <repository>
+            <id>codice</id>
+            <name>Codice Repository</name>
+            <url>http://artifacts.codice.org/content/groups/public/</url>
+        </repository>
+    </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ddf.catalog.core</groupId>
+                <artifactId>catalog-core-api</artifactId>
+                <version>${ddf.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 </project>

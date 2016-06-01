@@ -10,22 +10,26 @@
  * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
  * is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
- **/
-package org.codice.alliance.nsili.common;
+ */
+package alliance.test.itests;
 
-import java.io.InputStream;
+import org.codice.alliance.nsili.mockserver.server.MockNsili;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+public class MockNsiliRunnable implements Runnable {
 
-@Path("/")
-public interface Nsili {
+    private int webPort;
 
-    @GET
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM, MediaType.WILDCARD})
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM, MediaType.WILDCARD})
-    InputStream getIorFile();
+    private int corbaPort;
+
+    public MockNsiliRunnable(int webPort, int corbaPort) {
+        this.webPort = webPort;
+        this.corbaPort = corbaPort;
+    }
+
+    @Override
+    public void run() {
+        MockNsili mockNsili = MockNsili.getInstance();
+        mockNsili.startWebServer(this.webPort);
+        mockNsili.startMockServer(this.corbaPort);
+    }
 }

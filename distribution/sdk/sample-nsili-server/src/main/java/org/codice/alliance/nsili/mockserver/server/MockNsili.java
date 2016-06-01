@@ -13,10 +13,7 @@
  */
 package org.codice.alliance.nsili.mockserver.server;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.codice.alliance.nsili.mockserver.impl.LibraryImpl;
@@ -30,26 +27,29 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 public class MockNsili {
 
-    public static void main(String args[]) {
-        if (args.length != 1) {
-            System.out.println("Cannot run the mock server.  No ports are specified.");
-            return;
-        }
+    private String iorString;
 
-        String[] ports = args[0].split(",");
+    // Singleton providing access to IOR string from reflection instantiated web service
+    private static final MockNsili mockNsili = new MockNsili();
 
-        int webPort = Integer.parseInt(ports[0]);
+    private MockNsili() {
+    }
 
-        int corbaPort = Integer.parseInt(ports[1]);
+    public static MockNsili getInstance() {
+        return mockNsili;
+    }
 
-        runMockWebServer(webPort);
+    public String getIorString() {
+        return iorString;
+    }
 
+    public void startMockServer(int corbaPort) {
         ORB orb = null;
 
         try {
             orb = getOrbForServer(corbaPort);
-            orb.run();
             System.out.println("Server Started...");
+            orb.run(); // blocks the current thread until the ORB is shutdown
         } catch (InvalidName | AdapterInactive | WrongPolicy | ServantNotActive e) {
             System.out.println("Unable to start the CORBA server.");
             e.printStackTrace();
@@ -60,44 +60,49 @@ public class MockNsili {
 
         if (orb != null) {
             orb.destroy();
-
         }
-
-        System.exit(0);
-
     }
 
-    private static void runMockWebServer(int port) {
+    public void startWebServer(int port) {
         JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
         sf.setResourceClasses(MockWebService.class);
         sf.setAddress("http://localhost:" + port + "/");
         sf.create();
     }
 
-    private static ORB getOrbForServer(int port)
-            throws InvalidName, AdapterInactive, WrongPolicy, ServantNotActive, IOException {
+    private ORB getOrbForServer(int port)
+        throws InvalidName, AdapterInactive, WrongPolicy, ServantNotActive, IOException {
 
-        java.util.Properties props = new java.util.Properties();
-        props.put("org.omg.CORBA.ORBInitialPort", port);
-        final ORB orb = ORB.init(new String[0], props);
+        System.setProperty("org.omg.CORBA.ORBInitialPort", String.valueOf(port));
+
+        final ORB orb = ORB.init(new String[0], null);
+
+        System.clearProperty("org.omg.CORBA.ORBInitialPort");
 
         POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-
-        rootPOA.the_POAManager()
-                .activate();
+        rootPOA.the_POAManager().activate();
 
         org.omg.CORBA.Object objref = rootPOA.servant_to_reference(new LibraryImpl(rootPOA));
-
-        Writer writer = new OutputStreamWriter(new FileOutputStream(
-                System.getProperty("user.dir") + "/target/ior.txt"), "UTF-8");
-
-        writer.write(orb.object_to_string(objref));
-        writer.close();
-
-        rootPOA.the_POAManager()
-                .activate();
+        iorString = orb.object_to_string(objref);
 
         return orb;
+    }
 
+    public static void main(String args[]) {
+        if (args.length != 1) {
+            System.out.println("ERROR: Cannot start the mock NSILI server; No ports specified." +
+                    "\nProvide arguments in format: [WEB_PORT], [CORBA_PORT]");
+            return;
+        }
+
+        String[] ports = args[0].split(",");
+
+        int webPort = Integer.parseInt(ports[0]);
+        int corbaPort = Integer.parseInt(ports[1]);
+
+        mockNsili.startWebServer(webPort);
+        mockNsili.startMockServer(corbaPort);
+
+        System.exit(0);
     }
 }

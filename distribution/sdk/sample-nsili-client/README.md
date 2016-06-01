@@ -13,10 +13,12 @@
 <img src="https://tools.codice.org/wiki/download/attachments/1179800/ddf.jpg"/>
 # [Codice Alliance](http://github.com/codice/alliance/)
 
-## Mock NSILI Server
+## Mock NSILI Client
 
-Codice Alliance contains a sample NSILI compliant server to be used for testing purposes.  This utility can be run from the command-line within the sample-nsili-server directory by using maven and specifying a web and corba port.
+Codice Alliance contains a sample NSILI client to be used for testing purposes.  This utility can be run from the command-line within the sample-nsili-client directory by using maven and specifying a web port.
 
 ```
-mvn -Pcorba.server -Dexec.args=WEBPORT,CORBAPORT
+mvn -Pcorba.client -Dexec.args=IORURL
+e.g. mvn -Pcorba.client -Dexec.args="http://localhost:20002/data/ior.txt"
+     mvn -Pcorba.client -Dexec.args="https://localhost:8993/services/nsili/ior.txt"
 ```
