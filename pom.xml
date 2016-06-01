@@ -33,7 +33,7 @@
         </license>
     </licenses>
     <properties>
-        <ddf.version>2.10.0-2016-05-20T085330Z</ddf.version>
+        <ddf.version>2.10.0-SNAPSHOT</ddf.version>
         <ddf.support.version>2.3.6</ddf.support.version>
         <ddf.scm.connection.url/>
         <snapshots.repository.url/>

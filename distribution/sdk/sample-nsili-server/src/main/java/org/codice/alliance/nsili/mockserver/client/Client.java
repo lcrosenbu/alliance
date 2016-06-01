@@ -19,17 +19,11 @@ import org.codice.alliance.nsili.common.NsilCorbaExceptionUtil;
 import org.codice.alliance.nsili.common.NsiliConstants;
 import org.codice.alliance.nsili.common.UCO.DAG;
 import org.codice.alliance.nsili.common.UID.Product;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
-import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
-
 public class Client {
-    private HttpServer server = null;
+    //private HttpServer server = null;
 
     public static int LISTEN_PORT = 8200;
 
@@ -38,7 +32,7 @@ public class Client {
     private static final boolean SHOULD_TEST_STANDING_QUERY_MGR = false;
 
     public void runTest(String[] args) throws Exception {
-        startHttpListener();
+        //startHttpListener();
 
         String iorURL = args[0];
         org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args, null);
@@ -121,9 +115,9 @@ public class Client {
         nsiliClient.cleanup();
 
         orb.shutdown(true);
-        if (server != null) {
-            server.stop();
-        }
+//        if (server != null) {
+//            server.stop();
+//        }
 
         System.out.println("Done. ");
         System.exit(0);
@@ -137,7 +131,7 @@ public class Client {
         client.runTest(args);
     }
 
-    private void startHttpListener() {
+/*    private void startHttpListener() {
         try {
             ResourceConfig rc = new PackagesResourceConfig(
                     "org.codice.alliance.nsili.mockserver.client");
@@ -151,5 +145,5 @@ public class Client {
             System.err.println("HTTP Server initilization error: " + e);
             e.printStackTrace(System.err);
         }
-    }
+    }*/
 }

@@ -23,25 +23,25 @@ import javax.ws.rs.core.Response;
 @Path("data")
 public class MockWebService {
 
-    private static final String PRODUCT_RELATIVE_PATH = "/src/main/java/org/codice/alliance/nsili/mockserver/data/product.jpg";
+    private static final String PRODUCT_RELATIVE_PATH = "./src/main/java/org/codice/alliance/nsili/mockserver/data/product.jpg";
 
-    private static final String IOR_RELATIVE_PATH = "/target/ior.txt";
+    private static final String IOR_RELATIVE_PATH = "./target/ior.txt";
 
     @GET
     @Path("product.jpg")
     @Produces("text/plain")
     public Response getProductFile() {
-        File file = new File(System.getProperty("user.dir") + PRODUCT_RELATIVE_PATH);
-        Response.ResponseBuilder response = Response.ok(file);
-        response.header("Content-Disposition", "attachment; filename=product.jpg");
-        return response.build();
-    }
+    File file = new File(PRODUCT_RELATIVE_PATH);
+    Response.ResponseBuilder response = Response.ok(file);
+    response.header("Content-Disposition", "attachment; filename=product.jpg");
+    return response.build();
+}
 
     @GET
     @Path("ior.txt")
     @Produces("text/plain")
     public Response getIORFile() {
-        File file = new File(System.getProperty("user.dir") + IOR_RELATIVE_PATH);
+        File file = new File(IOR_RELATIVE_PATH);
         Response.ResponseBuilder response = Response.ok(file);
         return response.build();
     }
