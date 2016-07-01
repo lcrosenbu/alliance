@@ -16,6 +16,7 @@ package org.codice.alliance.transformer.nitf.gmti;
 import java.io.Serializable;
 import java.util.function.Function;
 
+import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.NitfAttribute;
 import org.codice.imaging.nitf.core.tre.Tre;
 
@@ -24,21 +25,24 @@ import ddf.catalog.data.impl.AttributeDescriptorImpl;
 import ddf.catalog.data.impl.BasicTypes;
 
 enum AcftbAttribute implements NitfAttribute<Tre> {
-    AIRCRAFT_MISSION_ID("aircraftMissionId",
+
+    AIRCRAFT_MISSION_ID(Isr.MISSION_ID,
             "AC_MSN_ID",
             tre -> GmtiTreUtility.getTreValue(tre, "AC_MSN_ID")),
 
-    AIRCRAFT_TAIL_NUMBER("aircraftTailNumber",
+    AIRCRAFT_TAIL_NUMBER(Isr.PLATFORM_ID,
             "AC_TAIL_NO",
             tre -> GmtiTreUtility.getTreValue(tre, "AC_TAIL_NO")),
 
     AIRCRAFT_TAKEOFF("aircraftTakeOff", "AC_TO", tre -> GmtiTreUtility.getTreValue(tre, "AC_TO")),
 
-    SENSOR_ID_TYPE("sensorIdType",
+    SENSOR_ID_TYPE(Isr.SENSOR_TYPE,
             "SENSOR_ID_TYPE",
             tre -> GmtiTreUtility.getTreValue(tre, "SENSOR_ID_TYPE")),
 
-    SENSOR_ID("sensorId", "SENSOR_ID", tre -> GmtiTreUtility.getTreValue(tre, "SENSOR_ID")),
+    SENSOR_ID(Isr.SENSOR_ID,
+            "SENSOR_ID",
+            tre -> GmtiTreUtility.getTreValue(tre, "SENSOR_ID")),
 
     SCENE_SOURCE("sceneSource",
             "SCENE_SOURCE",

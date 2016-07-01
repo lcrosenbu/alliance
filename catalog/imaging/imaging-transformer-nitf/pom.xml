@@ -54,6 +54,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.codice.alliance.catalog.core</groupId>
+            <artifactId>catalog-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.codice.imaging.nitf</groupId>
             <artifactId>codice-imaging-nitf-core</artifactId>
         </dependency>
@@ -98,13 +104,14 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Embed-Dependency>
                             thumbnailator,
+                            catalog-core-api,
                             catalog-core-api-impl,
                             platform-util,
                             codice-imaging-nitf-core,
                             codice-imaging-nitf-render,
-                            codice-imaging-nitf-fluent-api
+                            codice-imaging-nitf-fluent-api,
                         </Embed-Dependency>
-                        <Export-Package/>
+                        <Export-Package>ddf.catalog.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

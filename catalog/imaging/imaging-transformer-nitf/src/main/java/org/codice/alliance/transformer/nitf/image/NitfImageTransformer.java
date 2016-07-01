@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.SegmentHandler;
 import org.codice.imaging.nitf.core.image.ImageCoordinates;
 import org.codice.imaging.nitf.core.image.ImageCoordinatesRepresentation;
@@ -108,6 +109,13 @@ public class NitfImageTransformer extends SegmentHandler {
                             + " coordinates will not be available.",
                     imagesegmentHeader.getImageCoordinatesRepresentation());
         }
+
+        // concatenate nitf comments to map to Isr.COMMENTS attribute
+        StringBuilder sb = new StringBuilder();
+        sb.append(ImageAttribute.IMAGE_COMMENT_1.getAccessorFunction().apply(imagesegmentHeader));
+        sb.append(ImageAttribute.IMAGE_COMMENT_2.getAccessorFunction().apply(imagesegmentHeader));
+        sb.append(ImageAttribute.IMAGE_COMMENT_3.getAccessorFunction().apply(imagesegmentHeader));
+        metacard.setAttribute(new AttributeImpl(Isr.COMMENTS, sb.toString()));
     }
 
     private Polygon getPolygonForSegment(ImageSegment segment, GeometryFactory geomFactory) {

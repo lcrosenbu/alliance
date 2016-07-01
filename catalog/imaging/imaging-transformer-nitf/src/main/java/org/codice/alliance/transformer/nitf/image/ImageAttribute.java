@@ -19,8 +19,8 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.NitfAttribute;
-import org.codice.imaging.nitf.core.common.DateTime;
 import org.codice.imaging.nitf.core.common.NitfFormatException;
 import org.codice.imaging.nitf.core.image.ImageSegment;
 import org.slf4j.Logger;
@@ -30,23 +30,35 @@ import ddf.catalog.data.AttributeDescriptor;
 import ddf.catalog.data.AttributeType;
 import ddf.catalog.data.impl.AttributeDescriptorImpl;
 import ddf.catalog.data.impl.BasicTypes;
+import ddf.catalog.data.types.Core;
+import ddf.catalog.data.types.DateTime;
+import ddf.catalog.data.types.Media;
 
 /**
  * NitfAttributes to represent the properties of a ImageSegment.
  */
 public enum ImageAttribute implements NitfAttribute<ImageSegment> {
-    FILE_PART_TYPE("filePartType", "IM", segment -> "IM"),
-    IMAGE_IDENTIFIER_1("imageIdentifier1", "IID1", ImageSegment::getIdentifier),
-    IMAGE_DATE_AND_TIME("imageDateAndTime",
+    FILE_PART_TYPE("filePartType",
+            "IM",
+            segment -> "IM"),
+    IMAGE_IDENTIFIER_1("imageIdentifier1",
+            "IID1",
+            ImageSegment::getIdentifier),
+    IMAGE_DATE_AND_TIME(DateTime.START,
             "IDATIM",
-            segment -> convertNitfDate(segment.getImageDateTime()),
-            BasicTypes.DATE_TYPE),
-    TARGET_IDENTIFIER("targetIdentifier", "TGTID", segment -> getTargetId(segment)),
-    IMAGE_IDENTIFIER_2("imageIdentifier2", "IID2", ImageSegment::getImageIdentifier2),
+            segment -> convertNitfDate(segment.getImageDateTime()), BasicTypes.DATE_TYPE),
+    TARGET_IDENTIFIER(Isr.TARGET_ID,
+            "TGTID",
+            segment -> getTargetId(segment)),
+    IMAGE_IDENTIFIER_2(Isr.IMAGE_ID,
+            "IID2",
+            ImageSegment::getImageIdentifier2),
+    IMAGE_IDENTIFIER_2_MISSION_ID(Isr.MISSION_ID,
+            "IID2",
+            segment -> segment.getImageIdentifier2()),
     IMAGE_SECURITY_CLASSIFICATION("imageSecurityClassification",
             "ISCLAS",
-            segment -> segment.getSecurityMetadata()
-                    .getSecurityClassification()
+            segment -> segment.getSecurityMetadata().getSecurityClassification()
                     .name()),
     IMAGE_CLASSIFICATION_SECURITY_SYSTEM("imageClassificationSecuritySystem",
             "ISCLSY",
@@ -108,12 +120,14 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
             "ISCTLN",
             segment -> segment.getSecurityMetadata()
                     .getSecurityControlNumber()),
-    IMAGE_SOURCE("imageSource", "ISORCE", ImageSegment::getImageSource),
-    NUMBER_OF_SIGNIFICANT_ROWS_IN_IMAGE("numberOfSignificantRowsInImage",
+    IMAGE_SOURCE(Isr.ORIGINAL_SOURCE,
+            "ISORCE",
+            ImageSegment::getImageSource),
+    NUMBER_OF_SIGNIFICANT_ROWS_IN_IMAGE(Media.HEIGHT,
             "NROWS",
             ImageSegment::getNumberOfRows,
             BasicTypes.LONG_TYPE),
-    NUMBER_OF_SIGNIFICANT_COLUMNS_IN_IMAGE("numberOfSignificantColumnsInImage",
+    NUMBER_OF_SIGNIFICANT_COLUMNS_IN_IMAGE(Media.WIDTH,
             "NCOLS",
             ImageSegment::getNumberOfColumns,
             BasicTypes.LONG_TYPE),
@@ -121,11 +135,11 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
             "PVTYPE",
             segment -> segment.getPixelValueType()
                     .name()),
-    IMAGE_REPRESENTATION("imageRepresentation",
+    IMAGE_REPRESENTATION(Media.ENCODING,
             "IREP",
             segment -> segment.getImageRepresentation()
                     .name()),
-    IMAGE_CATEGORY("imageCategory",
+    IMAGE_CATEGORY(Isr.CATEGORY,
             "ICAT",
             segment -> segment.getImageCategory()
                     .name()),
@@ -167,11 +181,13 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
                     segment.getImageComments()
                             .get(2) :
                     ""),
-    IMAGE_COMPRESSION("imageCompression",
+    IMAGE_COMPRESSION(Media.COMPRESSION,
             "IC",
             segment -> segment.getImageCompression()
                     .name()),
-    NUMBER_OF_BANDS("numberOfBands", "NBANDS", ImageSegment::getNumBands, BasicTypes.INTEGER_TYPE),
+    NUMBER_OF_BANDS(Media.NUMBER_OF_BANDS,
+            "NBANDS",
+            ImageSegment::getNumBands, BasicTypes.INTEGER_TYPE),
     IMAGE_MODE("imageMode",
             "IMODE",
             segment -> segment.getImageMode()
@@ -192,7 +208,7 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
             "NPPBV",
             ImageSegment::getNumberOfPixelsPerBlockVertical,
             BasicTypes.INTEGER_TYPE),
-    NUMBER_OF_BITS_PER_PIXEL("numberOfBitsPerPixel",
+    NUMBER_OF_BITS_PER_PIXEL(Media.BITS_PER_SAMPLE,
             "NBPP",
             ImageSegment::getNumberOfBitsPerPixelPerBand,
             BasicTypes.INTEGER_TYPE),
@@ -204,7 +220,7 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
             "IALVL",
             ImageSegment::getAttachmentLevel,
             BasicTypes.INTEGER_TYPE),
-    IMAGE_LOCATION("imageLocation",
+    IMAGE_LOCATION(Core.LOCATION,
             "ILOC",
             segment -> segment.getImageLocationRow() + "," + segment.getImageLocationColumn()),
     IMAGE_MAGNIFICATION("imageMagnification",
@@ -258,7 +274,7 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
         return null;
     }
 
-    private static Date convertNitfDate(DateTime nitfDateTime) {
+    private static Date convertNitfDate(org.codice.imaging.nitf.core.common.DateTime nitfDateTime) {
         if (nitfDateTime == null || nitfDateTime.getZonedDateTime() == null) {
             return null;
         }

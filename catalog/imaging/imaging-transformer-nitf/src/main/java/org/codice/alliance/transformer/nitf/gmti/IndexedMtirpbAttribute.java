@@ -22,8 +22,10 @@ import org.codice.imaging.nitf.core.tre.TreGroup;
 import ddf.catalog.data.AttributeDescriptor;
 import ddf.catalog.data.impl.AttributeDescriptorImpl;
 import ddf.catalog.data.impl.BasicTypes;
+import ddf.catalog.data.types.Core;
 
 enum IndexedMtirpbAttribute implements NitfAttribute<TreGroup> {
+
     INDEXED_TARGET_CLASSIFICATION_CATEGORY("targetClassificationCategory",
             "TGT_CAT",
             tre -> getClassificationCategory(tre)),
@@ -42,7 +44,7 @@ enum IndexedMtirpbAttribute implements NitfAttribute<TreGroup> {
     INDEXED_TARGET_LOCATION_ACCURACY("targetLocationAccuracy",
             "TGT_LOC_ACCY",
             tre -> GmtiTreUtility.getTreValue(tre, "TGT_LOC_ACCY")),
-    INDEXED_TARGET_LOCATION("targetLocation",
+    INDEXED_TARGET_LOCATION(Core.LOCATION,
             "TGT_LOC",
             tre -> GmtiTreUtility.getTreValue(tre, "TGT_LOC"));
 

@@ -16,6 +16,7 @@ package org.codice.alliance.transformer.nitf.gmti;
 import java.io.Serializable;
 import java.util.function.Function;
 
+import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.NitfAttribute;
 import org.codice.imaging.nitf.core.tre.Tre;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import ddf.catalog.data.impl.AttributeDescriptorImpl;
 import ddf.catalog.data.impl.BasicTypes;
 
 public enum MtirpbAttribute implements NitfAttribute<Tre> {
+
     DESTINATION_POINT("destinationPoint",
             "MTI_DP",
             tre -> GmtiTreUtility.getTreValue(tre, "MTI_DP")),
@@ -39,7 +41,7 @@ public enum MtirpbAttribute implements NitfAttribute<Tre> {
     SCAN_DATE_AND_TIME("scanDateAndTime",
             "DATIME",
             tre -> GmtiTreUtility.getTreValue(tre, "DATIME")),
-    AIRCRAFT_LOCATION("aircraftLocation",
+    AIRCRAFT_LOCATION(Isr.DWELL_LOCATION,
             "ACFT_LOC",
             tre -> GmtiTreUtility.getTreValue(tre, "ACFT_LOC")),
     AIRCRAFT_ALTITUDE("aircraftAltitude",
@@ -58,7 +60,7 @@ public enum MtirpbAttribute implements NitfAttribute<Tre> {
     COSINE_OF_GRAZE_ANGLE("cosineOfGrazeAngle",
             "COSGRZ",
             tre -> GmtiTreUtility.getTreValue(tre, "COSGRZ")),
-    NUMBER_OF_VALID_TARGETS("numberOfValidTargets",
+    NUMBER_OF_VALID_TARGETS(Isr.TARGET_REPORT_COUNT,
             "NO_VALID_TARGETS",
             tre -> GmtiTreUtility.getTreValue(tre, "NO_VALID_TARGETS"));
 

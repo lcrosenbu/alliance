@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.codice.alliance.catalog.core.api.types.Security;
 import org.codice.imaging.nitf.core.common.DateTime;
 import org.codice.imaging.nitf.core.header.NitfHeader;
 
@@ -26,16 +27,20 @@ import ddf.catalog.data.AttributeDescriptor;
 import ddf.catalog.data.AttributeType;
 import ddf.catalog.data.impl.AttributeDescriptorImpl;
 import ddf.catalog.data.impl.BasicTypes;
+import ddf.catalog.data.types.Contact;
+import ddf.catalog.data.types.Core;
+import ddf.catalog.data.types.Media;
 
 /**
  * NitfAttributes to represent the properties of a NitfFileHeader.
  */
 public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
-    FILE_PROFILE_NAME("fileProfileName",
+
+    FILE_PROFILE_NAME(Media.FORMAT,
             "FHDR",
             header -> header.getFileType()
                     .name()),
-    FILE_VERSION("fileVersion",
+    FILE_VERSION(Media.FORMAT_VERSION,
             "FVER",
             header -> header.getFileType()
                     .name()),
@@ -43,19 +48,25 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
             "CLEVEL",
             NitfHeader::getComplexityLevel,
             BasicTypes.INTEGER_TYPE),
-    STANDARD_TYPE("standardType", "STYPE", NitfHeader::getStandardType),
-    ORIGINATING_STATION_ID("originatingStationId", "OSTAID", NitfHeader::getOriginatingStationId),
+    STANDARD_TYPE("standardType",
+            "STYPE",
+            NitfHeader::getStandardType),
+    ORIGINATING_STATION_ID(Core.SOURCE_ID,
+            "OSTAID",
+            NitfHeader::getOriginatingStationId),
     FILE_DATE_AND_TIME("fileDateAndTime",
             "FDT",
             header -> convertNitfDate(header.getFileDateTime()),
             BasicTypes.DATE_TYPE),
-    FILE_TITLE("fileTitle", "FTITLE", NitfHeader::getFileTitle),
-    FILE_SECURITY_CLASSIFICATION("fileSecurityClassification",
+    FILE_TITLE(Core.TITLE,
+            "FTITLE",
+            NitfHeader::getFileTitle),
+    FILE_SECURITY_CLASSIFICATION(Security.CLASSIFICATION,
             "FSCLAS",
             header -> header.getFileSecurityMetadata()
                     .getSecurityClassification()
                     .name()),
-    FILE_CLASSIFICATION_SECURITY_SYSTEM("fileClassificationSecuritySystem",
+    FILE_CLASSIFICATION_SECURITY_SYSTEM(Security.CLASSIFICATION_SYSTEM,
             "FSCLSY",
             header -> header.getFileSecurityMetadata()
                     .getSecurityClassificationSystem()),
@@ -63,7 +74,7 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
             "FSCODE",
             header -> header.getFileSecurityMetadata()
                     .getCodewords()),
-    FILE_CONTROL_AND_HANDLING("fileControlAndHandling",
+    FILE_CONTROL_AND_HANDLING(Security.CODEWORDS,
             "FSCTLH",
             header -> header.getFileSecurityMetadata()
                     .getControlAndHandling()),
@@ -129,8 +140,10 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
                     header.getFileBackgroundColour()
                             .toString() :
                     ""),
-    ORIGINATORS_NAME("originatorsName", "ONAME", NitfHeader::getOriginatorsName),
-    ORIGINATORS_PHONE_NUMBER("originatorsPhoneNumber",
+    ORIGINATORS_NAME(Contact.CREATOR_NAME,
+            "ONAME",
+            NitfHeader::getOriginatorsName),
+    ORIGINATORS_PHONE_NUMBER(Contact.CREATOR_PHONE,
             "OPHONE",
             NitfHeader::getOriginatorsPhoneNumber);
 

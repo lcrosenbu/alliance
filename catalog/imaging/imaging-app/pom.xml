@@ -31,6 +31,11 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.codice.alliance.catalog.core</groupId>
+            <artifactId>catalog-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.codice.alliance.imaging</groupId>
             <artifactId>imaging-transformer-nitf</artifactId>
             <version>${project.version}</version>
