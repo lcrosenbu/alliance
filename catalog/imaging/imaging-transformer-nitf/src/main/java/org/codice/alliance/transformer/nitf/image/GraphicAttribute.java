@@ -28,95 +28,99 @@ import ddf.catalog.data.impl.BasicTypes;
  * NitfAttributes to represent the properties of a GraphicSegment.
  */
 enum GraphicAttribute implements NitfAttribute<GraphicSegment> {
-    FILE_PART_TYPE("filePartType", "SY", segment -> "SY"),
-    GRAPHIC_IDENTIFIER("graphicIdentifier", "SID", GraphicSegment::getIdentifier),
-    GRAPHIC_NAME("graphicName", "SNAME", GraphicSegment::getGraphicName),
-    GRAPHIC_SECURITY_CLASSIFICATION("graphicSecurityClassification",
+    FILE_PART_TYPE("nitf.graphic.filePartType",
+            "SY",
+            segment -> "SY"),
+    GRAPHIC_IDENTIFIER("nitf.graphic.graphicIdentifier",
+            "SID",
+            GraphicSegment::getIdentifier),
+    GRAPHIC_NAME("nitf.graphic.graphicName",
+            "SNAME",
+            GraphicSegment::getGraphicName),
+    GRAPHIC_SECURITY_CLASSIFICATION("nitf.graphic.graphicSecurityClassification",
             "SSCLAS",
             segment -> segment.getSecurityMetadata()
                     .getSecurityClassification()
                     .name()),
-    GRAPHIC_CLASSIFICATION_SECURITY_SYSTEM("graphicClassificationSecuritySystem",
+    GRAPHIC_CLASSIFICATION_SECURITY_SYSTEM("nitf.graphic.graphicClassificationSecuritySystem",
             "SSCLSY",
             segment -> segment.getSecurityMetadata()
                     .getSecurityClassificationSystem()),
-    GRAPHIC_CODEWORDS("graphicCodewords",
+    GRAPHIC_CODEWORDS("nitf.graphic.graphicCodewords",
             "SSCODE",
             segment -> segment.getSecurityMetadata()
                     .getCodewords()),
-    GRAPHIC_CONTROL_AND_HANDLING("graphicControlAndHandling",
+    GRAPHIC_CONTROL_AND_HANDLING("nitf.graphic.graphicControlAndHandling",
             "SSCTLH",
             segment -> segment.getSecurityMetadata()
                     .getControlAndHandling()),
-    GRAPHIC_RELEASING_INSTRUCTIONS("graphicReleasingInstructions",
+    GRAPHIC_RELEASING_INSTRUCTIONS("nitf.graphic.graphicReleasingInstructions",
             "SSREL",
             segment -> segment.getSecurityMetadata()
                     .getReleaseInstructions()),
-    GRAPHIC_DECLASSIFICATION_TYPE("graphicDeclassificationType",
+    GRAPHIC_DECLASSIFICATION_TYPE("nitf.graphic.graphicDeclassificationType",
             "SSDCTP",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationType()),
-    GRAPHIC_DECLASSIFICATION_DATE("graphicDeclassificationDate",
+    GRAPHIC_DECLASSIFICATION_DATE("nitf.graphic.graphicDeclassificationDate",
             "SSDCDT",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationDate()),
-    GRAPHIC_DECLASSIFICATION_EXEMPTION("graphicDeclassificationExemption",
+    GRAPHIC_DECLASSIFICATION_EXEMPTION("nitf.graphic.graphicDeclassificationExemption",
             "SSDCXM",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationExemption()),
-    GRAPHIC_DOWNGRADE("graphicDowngrade",
+    GRAPHIC_DOWNGRADE("nitf.graphic.graphicDowngrade",
             "SSDG",
             segment -> segment.getSecurityMetadata()
                     .getDowngrade()),
-    GRAPHIC_DOWNGRADE_DATE("graphicDowngradeDate",
+    GRAPHIC_DOWNGRADE_DATE("nitf.graphic.graphicDowngradeDate",
             "SSDGDT",
             segment -> segment.getSecurityMetadata()
                     .getDowngradeDate()),
-    GRAPHIC_CLASSIFICATION_TEXT("graphicClassificationText",
+    GRAPHIC_CLASSIFICATION_TEXT("nitf.graphic.graphicClassificationText",
             "SSCLTX",
             segment -> segment.getSecurityMetadata()
                     .getClassificationText()),
-    GRAPHIC_CLASSIFICATION_AUTHORITY_TYPE("graphicClassificationAuthorityType",
+    GRAPHIC_CLASSIFICATION_AUTHORITY_TYPE("nitf.graphic.graphicClassificationAuthorityType",
             "SSCATP",
             segment -> segment.getSecurityMetadata()
                     .getClassificationAuthorityType()),
-    GRAPHIC_CLASSIFICATION_AUTHORITY("graphicClassificationAuthority",
+    GRAPHIC_CLASSIFICATION_AUTHORITY("nitf.graphic.graphicClassificationAuthority",
             "SSCAUT",
             segment -> segment.getSecurityMetadata()
                     .getClassificationAuthority()),
-    GRAPHIC_CLASSIFICATION_REASON("graphicClassificationReason",
+    GRAPHIC_CLASSIFICATION_REASON("nitf.graphic.graphicClassificationReason",
             "SSCRSN",
             segment -> segment.getSecurityMetadata()
                     .getClassificationReason()),
-    GRAPHIC_SECURITY_SOURCE_DATE("graphicSecuritySourceDate",
+    GRAPHIC_SECURITY_SOURCE_DATE("nitf.graphic.graphicSecuritySourceDate",
             "SSSRDT",
             segment -> segment.getSecurityMetadata()
                     .getSecuritySourceDate()),
-    GRAPHIC_SECURITY_CONTROL_NUMBER("graphicSecurityControlNumber",
+    GRAPHIC_SECURITY_CONTROL_NUMBER("nitf.graphic.graphicSecurityControlNumber",
             "SSCTLN",
             segment -> segment.getSecurityMetadata()
                     .getSecurityControlNumber()),
-    GRAPHIC_DISPLAY_LEVEL("graphicDisplayLevel",
+    GRAPHIC_DISPLAY_LEVEL("nitf.graphic.graphicDisplayLevel",
             "SDLVL",
             GraphicSegment::getGraphicDisplayLevel,
             BasicTypes.INTEGER_TYPE),
-    GRAPHIC_ATTACHMENT_LEVEL("graphicAttachmentLevel",
+    GRAPHIC_ATTACHMENT_LEVEL("nitf.graphic.graphicAttachmentLevel",
             "SALVL",
             GraphicSegment::getAttachmentLevel,
             BasicTypes.INTEGER_TYPE),
-    GRAPHIC_LOCATION("graphicLocation",
+    GRAPHIC_LOCATION("nitf.graphic.graphicLocation",
             "SLOC",
             segment -> segment.getGraphicLocationRow() + "," + segment.getGraphicLocationColumn()),
-    GRAPHIC_COLOR("graphicColor",
+    GRAPHIC_COLOR("nitf.graphic.graphicColor",
             "SCOLOR",
             segment -> segment.getGraphicColour()
                     .toString()),
-    GRAPHIC_EXTENDED_SUBHEADER_DATA_LENGTH("graphicExtendedSubheaderDataLength",
+    GRAPHIC_EXTENDED_SUBHEADER_DATA_LENGTH("nitf.graphic.graphicExtendedSubheaderDataLength",
             "SXSHDL",
             GraphicSegment::getExtendedHeaderDataOverflow,
             BasicTypes.INTEGER_TYPE);
-
-    public static final String ATTRIBUTE_NAME_PREFIX = "nitf.graphic.";
 
     private String shortName;
 
@@ -137,7 +141,8 @@ enum GraphicAttribute implements NitfAttribute<GraphicSegment> {
         this.accessorFunction = accessor;
         this.shortName = sName;
         this.longName = lName;
-        this.attributeDescriptor = new AttributeDescriptorImpl(ATTRIBUTE_NAME_PREFIX + longName,
+        this.attributeDescriptor = new AttributeDescriptorImpl(
+                longName,
                 true,
                 true,
                 false,

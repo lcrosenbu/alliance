@@ -38,10 +38,10 @@ import ddf.catalog.data.types.Media;
  * NitfAttributes to represent the properties of a ImageSegment.
  */
 public enum ImageAttribute implements NitfAttribute<ImageSegment> {
-    FILE_PART_TYPE("filePartType",
+    FILE_PART_TYPE("nitf.image.filePartType",
             "IM",
             segment -> "IM"),
-    IMAGE_IDENTIFIER_1("imageIdentifier1",
+    IMAGE_IDENTIFIER_1("nitf.image.imageIdentifier1",
             "IID1",
             ImageSegment::getIdentifier),
     IMAGE_DATE_AND_TIME(DateTime.START,
@@ -53,70 +53,67 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
     IMAGE_IDENTIFIER_2(Isr.IMAGE_ID,
             "IID2",
             ImageSegment::getImageIdentifier2),
-    IMAGE_IDENTIFIER_2_MISSION_ID(Isr.MISSION_ID,
-            "IID2",
-            segment -> segment.getImageIdentifier2()),
-    IMAGE_SECURITY_CLASSIFICATION("imageSecurityClassification",
+    IMAGE_SECURITY_CLASSIFICATION("nitf.image.imageSecurityClassification",
             "ISCLAS",
             segment -> segment.getSecurityMetadata().getSecurityClassification()
                     .name()),
-    IMAGE_CLASSIFICATION_SECURITY_SYSTEM("imageClassificationSecuritySystem",
+    IMAGE_CLASSIFICATION_SECURITY_SYSTEM("nitf.image.imageClassificationSecuritySystem",
             "ISCLSY",
             segment -> segment.getSecurityMetadata()
                     .getSecurityClassificationSystem()),
-    IMAGE_CODEWORDS("imageCodewords",
+    IMAGE_CODEWORDS("nitf.image.imageCodewords",
             "ISCODE",
             segment -> segment.getSecurityMetadata()
                     .getCodewords()),
-    IMAGE_CONTROL_AND_HANDLING("imageControlandHandling",
+    IMAGE_CONTROL_AND_HANDLING("nitf.image.imageControlandHandling",
             "ISCTLH",
             segment -> segment.getSecurityMetadata()
                     .getControlAndHandling()),
-    IMAGE_RELEASING_INSTRUCTIONS("imageReleasingInstructions",
+    IMAGE_RELEASING_INSTRUCTIONS("nitf.image.imageReleasingInstructions",
             "ISREL",
             segment -> segment.getSecurityMetadata()
                     .getReleaseInstructions()),
-    IMAGE_DECLASSIFICATION_TYPE("imageDeclassificationType",
+    IMAGE_DECLASSIFICATION_TYPE("nitf.image.imageDeclassificationType",
             "ISDCTP",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationType()),
-    IMAGE_DECLASSIFICATION_DATE("imageDeclassificationDate",
+    IMAGE_DECLASSIFICATION_DATE("nitf.image.imageDeclassificationDate",
             "ISDCDT",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationDate()),
-    IMAGE_DECLASSIFICATION_EXEMPTION("imageDeclassificationExemption",
+    IMAGE_DECLASSIFICATION_EXEMPTION("nitf.image.imageDeclassificationExemption",
             "ISDCXM",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationExemption()),
-    IMAGE_DOWNGRADE("imageDowngrade",
+    IMAGE_DOWNGRADE("nitf.image.imageDowngrade",
             "ISDG",
             segment -> segment.getSecurityMetadata()
                     .getDowngrade()),
-    IMAGE_DOWNGRADE_DATE("imageDowngradeDate",
+    IMAGE_DOWNGRADE_DATE("nitf.image.imageDowngradeDate",
             "ISDGDT",
             segment -> segment.getSecurityMetadata()
                     .getDowngradeDate()),
-    IMAGE_CLASSIFICATION_TEXT("imageClassificationText",
+    IMAGE_CLASSIFICATION_TEXT("nitf.image.imageClassificationText",
             "ISCLTX",
             segment -> segment.getSecurityMetadata()
                     .getClassificationText()),
-    IMAGE_CLASSIFICATION_AUTHORITY_TYPE("imageClassificationAuthorityType",
+    IMAGE_CLASSIFICATION_AUTHORITY_TYPE("nitf.image.imageClassificationAuthorityType",
             "ISCATP",
             segment -> segment.getSecurityMetadata()
                     .getClassificationAuthorityType()),
-    IMAGE_CLASSIFICATION_AUTHORITY("imageClassificationAuthority",
+    IMAGE_CLASSIFICATION_AUTHORITY("nitf.image.imageClassificationAuthority",
             "ISCAUT",
             segment -> segment.getSecurityMetadata()
                     .getClassificationAuthority()),
-    IMAGE_CLASSIFICATION_REASON("imageClassificationReason",
+    IMAGE_CLASSIFICATION_REASON("nitf.image.imageClassificationReason",
             "ISCRSN",
             segment -> segment.getSecurityMetadata()
                     .getClassificationReason()),
-    IMAGE_SECURITY_SOURCE_DATE("imageSecuritySourceDate",
+    IMAGE_SECURITY_SOURCE_DATE("nitf.image.imageSecuritySourceDate",
             "ISSRDT",
             segment -> segment.getSecurityMetadata()
                     .getSecuritySourceDate()),
-    IMAGE_SECURITY_CONTROL_NUMBER("imageSecurityControlNumber",
+    IMAGE_SECURITY_CONTROL_NUMBER("nitf.image.imageSecurityControlNumber",
             "ISCTLN",
             segment -> segment.getSecurityMetadata()
                     .getSecurityControlNumber()),
@@ -131,7 +128,7 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
             "NCOLS",
             ImageSegment::getNumberOfColumns,
             BasicTypes.LONG_TYPE),
-    PIXEL_VALUE_TYPE("pixelValueType",
+    PIXEL_VALUE_TYPE("nitf.image.pixelValueType",
             "PVTYPE",
             segment -> segment.getPixelValueType()
                     .name()),
@@ -143,38 +140,38 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
             "ICAT",
             segment -> segment.getImageCategory()
                     .name()),
-    ACTUAL_BITS_PER_PIXEL_PER_BAND("actualBitsPerPixelPerBand",
+    ACTUAL_BITS_PER_PIXEL_PER_BAND("nitf.image.actualBitsPerPixelPerBand",
             "ABPP",
             ImageSegment::getActualBitsPerPixelPerBand,
             BasicTypes.INTEGER_TYPE),
-    PIXEL_JUSTIFICATION("pixelJustification",
+    PIXEL_JUSTIFICATION("nitf.image.pixelJustification",
             "PJUST",
             segment -> segment.getPixelJustification()
                     .name()),
-    IMAGE_COORDINATE_REPRESENTATION("imageCoordinateRepresentation",
+    IMAGE_COORDINATE_REPRESENTATION("nitf.image.imageCoordinateRepresentation",
             "ICORDS",
             segment -> segment.getImageCoordinatesRepresentation()
                     .name()),
-    NUMBER_OF_IMAGE_COMMENTS("numberOfImageComments",
+    NUMBER_OF_IMAGE_COMMENTS("nitf.image.numberOfImageComments",
             "NICOM",
             segment -> segment.getImageComments()
                     .size(),
             BasicTypes.INTEGER_TYPE),
-    IMAGE_COMMENT_1("imageComment1",
+    IMAGE_COMMENT_1("nitf.image.imageComment1",
             "ICOM1",
             segment -> segment.getImageComments()
                     .size() > 0 ?
                     segment.getImageComments()
                             .get(0) :
                     ""),
-    IMAGE_COMMENT_2("imageComment2",
+    IMAGE_COMMENT_2("nitf.image.imageComment2",
             "ICOM2",
             segment -> segment.getImageComments()
                     .size() > 1 ?
                     segment.getImageComments()
                             .get(1) :
                     ""),
-    IMAGE_COMMENT_3("imageComment3",
+    IMAGE_COMMENT_3("nitf.image.imageComment3",
             "ICOM3",
             segment -> segment.getImageComments()
                     .size() > 2 ?
@@ -188,23 +185,23 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
     NUMBER_OF_BANDS(Media.NUMBER_OF_BANDS,
             "NBANDS",
             ImageSegment::getNumBands, BasicTypes.INTEGER_TYPE),
-    IMAGE_MODE("imageMode",
+    IMAGE_MODE("nitf.image.imageMode",
             "IMODE",
             segment -> segment.getImageMode()
                     .name()),
-    NUMBER_OF_BLOCKS_PER_ROW("numberOfBlocksperRow",
+    NUMBER_OF_BLOCKS_PER_ROW("nitf.image.numberOfBlocksperRow",
             "NBPR",
             ImageSegment::getNumberOfBlocksPerRow,
             BasicTypes.INTEGER_TYPE),
-    NUMBER_OF_BLOCKS_PER_COLUMN("numberOfBlocksperColumn",
+    NUMBER_OF_BLOCKS_PER_COLUMN("nitf.image.numberOfBlocksperColumn",
             "NBPC",
             ImageSegment::getNumberOfBlocksPerColumn,
             BasicTypes.INTEGER_TYPE),
-    NUMBER_OF_PIXELS_PER_BLOCK_HORIZONTAL("numberOfPixelsPerBlockHorizontal",
+    NUMBER_OF_PIXELS_PER_BLOCK_HORIZONTAL("nitf.image.numberOfPixelsPerBlockHorizontal",
             "NPPBH",
             ImageSegment::getNumberOfPixelsPerBlockHorizontal,
             BasicTypes.INTEGER_TYPE),
-    NUMBER_OF_PIXELS_PER_BLOCK_VERTICAL("numberOfPixelsPerBlockVertical",
+    NUMBER_OF_PIXELS_PER_BLOCK_VERTICAL("nitf.image.numberOfPixelsPerBlockVertical",
             "NPPBV",
             ImageSegment::getNumberOfPixelsPerBlockVertical,
             BasicTypes.INTEGER_TYPE),
@@ -212,23 +209,21 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
             "NBPP",
             ImageSegment::getNumberOfBitsPerPixelPerBand,
             BasicTypes.INTEGER_TYPE),
-    IMAGE_DISPLAY_LEVEL("imageDisplayLevel",
+    IMAGE_DISPLAY_LEVEL("nitf.image.imageDisplayLevel",
             "IDLVL",
             ImageSegment::getImageDisplayLevel,
             BasicTypes.INTEGER_TYPE),
-    IMAGE_ATTACHMENT_LEVEL("imageAttachmentLevel",
+    IMAGE_ATTACHMENT_LEVEL("nitf.image.imageAttachmentLevel",
             "IALVL",
             ImageSegment::getAttachmentLevel,
             BasicTypes.INTEGER_TYPE),
     IMAGE_LOCATION(Core.LOCATION,
             "ILOC",
             segment -> segment.getImageLocationRow() + "," + segment.getImageLocationColumn()),
-    IMAGE_MAGNIFICATION("imageMagnification",
+    IMAGE_MAGNIFICATION("nitf.image.imageMagnification",
             "IMAG",
             segment -> segment.getImageMagnification()
                     .trim());
-
-    public static final String ATTRIBUTE_NAME_PREFIX = "nitf.image.";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageAttribute.class);
 
@@ -250,7 +245,8 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
         this.accessorFunction = accessor;
         this.shortName = sName;
         this.longName = lName;
-        this.attributeDescriptor = new AttributeDescriptorImpl(ATTRIBUTE_NAME_PREFIX + longName,
+        this.attributeDescriptor = new AttributeDescriptorImpl(
+                longName,
                 true,
                 true,
                 false,

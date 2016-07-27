@@ -44,17 +44,17 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
             "FVER",
             header -> header.getFileType()
                     .name()),
-    COMPLEXITY_LEVEL("complexityLevel",
+    COMPLEXITY_LEVEL("nitf.complexityLevel",
             "CLEVEL",
             NitfHeader::getComplexityLevel,
             BasicTypes.INTEGER_TYPE),
-    STANDARD_TYPE("standardType",
+    STANDARD_TYPE("nitf.standardType",
             "STYPE",
             NitfHeader::getStandardType),
     ORIGINATING_STATION_ID(Core.SOURCE_ID,
             "OSTAID",
             NitfHeader::getOriginatingStationId),
-    FILE_DATE_AND_TIME("fileDateAndTime",
+    FILE_DATE_AND_TIME("nitf.fileDateAndTime",
             "FDT",
             header -> convertNitfDate(header.getFileDateTime()),
             BasicTypes.DATE_TYPE),
@@ -70,7 +70,7 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
             "FSCLSY",
             header -> header.getFileSecurityMetadata()
                     .getSecurityClassificationSystem()),
-    FILE_CODE_WORDS("fileCodewords",
+    FILE_CODE_WORDS("nitf.fileCodewords",
             "FSCODE",
             header -> header.getFileSecurityMetadata()
                     .getCodewords()),
@@ -78,63 +78,63 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
             "FSCTLH",
             header -> header.getFileSecurityMetadata()
                     .getControlAndHandling()),
-    FILE_RELEASING_INSTRUCTIONS("fileReleasingInstructions",
+    FILE_RELEASING_INSTRUCTIONS("nitf.fileReleasingInstructions",
             "FSREL",
             header -> header.getFileSecurityMetadata()
                     .getReleaseInstructions()),
-    FILE_DECLASSIFICATION_TYPE("fileDeclassificationType",
+    FILE_DECLASSIFICATION_TYPE("nitf.fileDeclassificationType",
             "FSDCTP",
             header -> header.getFileSecurityMetadata()
                     .getDeclassificationType()),
-    FILE_DECLASSIFICATION_DATE("fileDeclassificationDate",
+    FILE_DECLASSIFICATION_DATE("nitf.fileDeclassificationDate",
             "FSDCDT",
             header -> header.getFileSecurityMetadata()
                     .getDeclassificationDate()),
-    FILE_DECLASSIFICATION_EXEMPTION("fileDeclassificationExemption",
+    FILE_DECLASSIFICATION_EXEMPTION("nitf.fileDeclassificationExemption",
             "FSDCXM",
             header -> header.getFileSecurityMetadata()
                     .getDeclassificationExemption()),
-    FILE_DOWNGRADE("fileDowngrade",
+    FILE_DOWNGRADE("nitf.fileDowngrade",
             "FSDG",
             header -> header.getFileSecurityMetadata()
                     .getDowngrade()),
-    FILE_DOWNGRADE_DATE("fileDowngradeDate",
+    FILE_DOWNGRADE_DATE("nitf.fileDowngradeDate",
             "FSDGDT",
             header -> header.getFileSecurityMetadata()
                     .getDowngradeDate()),
-    FILE_CLASSIFICATION_TEXT("fileClassificationText",
+    FILE_CLASSIFICATION_TEXT("nitf.fileClassificationText",
             "FSCLTX",
             header -> header.getFileSecurityMetadata()
                     .getClassificationText()),
-    FILE_CLASSIFICATION_AUTHORITY_TYPE("fileClassificationAuthorityType",
+    FILE_CLASSIFICATION_AUTHORITY_TYPE("nitf.fileClassificationAuthorityType",
             "FSCATP",
             header -> header.getFileSecurityMetadata()
                     .getClassificationAuthorityType()),
-    FILE_CLASSIFICATION_AUTHORITY("fileClassificationAuthority",
+    FILE_CLASSIFICATION_AUTHORITY("nitf.fileClassificationAuthority",
             "FSCAUT",
             header -> header.getFileSecurityMetadata()
                     .getClassificationAuthority()),
-    FILE_CLASSIFICATION_REASON("fileClassificationReason",
+    FILE_CLASSIFICATION_REASON("nitf.fileClassificationReason",
             "FSCRSN",
             header -> header.getFileSecurityMetadata()
                     .getClassificationReason()),
-    FILE_SECURITY_SOURCE_DATE("fileSecuritySourceDate",
+    FILE_SECURITY_SOURCE_DATE("nitf.fileSecuritySourceDate",
             "FSSRDT",
             header -> header.getFileSecurityMetadata()
                     .getSecuritySourceDate()),
-    FILE_SECURITY_CONTROL_NUMBER("fileSecurityControlNumber",
+    FILE_SECURITY_CONTROL_NUMBER("nitf.fileSecurityControlNumber",
             "FSCTLN",
             header -> header.getFileSecurityMetadata()
                     .getSecurityControlNumber()),
-    FILE_COPY_NUMBER("fileCopyNumber",
+    FILE_COPY_NUMBER("nitf.fileCopyNumber",
             "FSCOP",
             header -> header.getFileSecurityMetadata()
                     .getFileCopyNumber()),
-    FILE_NUMBER_OF_COPIES("fileNumberOfCopies",
+    FILE_NUMBER_OF_COPIES("nitf.fileNumberOfCopies",
             "FSCPYS",
             header -> header.getFileSecurityMetadata()
                     .getFileNumberOfCopies()),
-    FILE_BACKGROUND_COLOR("fileBackgroundColor",
+    FILE_BACKGROUND_COLOR("nitf.fileBackgroundColor",
             "FBKGC",
             header -> header.getFileBackgroundColour() != null ?
                     header.getFileBackgroundColour()
@@ -146,8 +146,6 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
     ORIGINATORS_PHONE_NUMBER(Contact.CREATOR_PHONE,
             "OPHONE",
             NitfHeader::getOriginatorsPhoneNumber);
-
-    public static final String ATTRIBUTE_NAME_PREFIX = "nitf.";
 
     private String shortName;
 
@@ -167,7 +165,8 @@ public enum NitfHeaderAttribute implements NitfAttribute<NitfHeader> {
         this.shortName = sName;
         this.longName = lName;
         this.accessorFunction = function;
-        this.attributeDescriptor = new AttributeDescriptorImpl(ATTRIBUTE_NAME_PREFIX + longName,
+        this.attributeDescriptor = new AttributeDescriptorImpl(
+                longName,
                 true,
                 true,
                 false,

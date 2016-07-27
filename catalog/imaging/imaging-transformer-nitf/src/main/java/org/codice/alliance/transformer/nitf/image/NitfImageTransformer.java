@@ -14,9 +14,12 @@
 package org.codice.alliance.transformer.nitf.image;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ddf.catalog.data.types.Core;
+import org.apache.commons.lang.StringUtils;
 import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.SegmentHandler;
 import org.codice.imaging.nitf.core.image.ImageCoordinates;
@@ -64,9 +67,10 @@ public class NitfImageTransformer extends SegmentHandler {
 
         List<Polygon> polygonList = new ArrayList<>();
 
-        nitfSegmentsFlow.forEachImageSegment(segment -> handleImageSegmentHeader(metacard,
-                segment,
-                polygonList))
+        nitfSegmentsFlow
+                .forEachImageSegment(segment -> handleImageSegmentHeader(metacard,
+                        segment,
+                        polygonList))
                 .forEachGraphicSegment(segment -> handleSegmentHeader(metacard,
                         segment,
                         GraphicAttribute.values()))
@@ -79,43 +83,33 @@ public class NitfImageTransformer extends SegmentHandler {
                 .forEachLabelSegment(segment -> handleSegmentHeader(metacard,
                         segment,
                         LabelAttribute.values()));
-
-        // Set GEOGRAPHY from discovered polygons
-        if (polygonList.size() == 1) {
-            metacard.setAttribute(new AttributeImpl(Metacard.GEOGRAPHY,
-                    polygonList.get(0)
-                            .toText()));
-        } else if (polygonList.size() > 1) {
-            Polygon[] polyAry = polygonList.toArray(new Polygon[polygonList.size()]);
-            MultiPolygon multiPolygon = GEOMETRY_FACTORY.createMultiPolygon(polyAry);
-            metacard.setAttribute(new AttributeImpl(Metacard.GEOGRAPHY, multiPolygon.toText()));
-        }
     }
 
-    private void handleImageSegmentHeader(Metacard metacard, ImageSegment imagesegmentHeader,
+    private void handleImageSegmentHeader(Metacard metacard, ImageSegment imageSegmentHeader,
             List<Polygon> polygons) {
 
-        handleSegmentHeader(metacard, imagesegmentHeader, ImageAttribute.values());
+        handleSegmentHeader(metacard, imageSegmentHeader, ImageAttribute.values());
 
         // handle geometry
-        if ((imagesegmentHeader.getImageCoordinatesRepresentation()
+        if ((imageSegmentHeader.getImageCoordinatesRepresentation()
                 == ImageCoordinatesRepresentation.GEOGRAPHIC) || (
-                imagesegmentHeader.getImageCoordinatesRepresentation()
+                imageSegmentHeader.getImageCoordinatesRepresentation()
                         == ImageCoordinatesRepresentation.DECIMALDEGREES)) {
-            polygons.add(getPolygonForSegment(imagesegmentHeader, GEOMETRY_FACTORY));
-        } else if (imagesegmentHeader.getImageCoordinatesRepresentation()
+            polygons.add(getPolygonForSegment(imageSegmentHeader, GEOMETRY_FACTORY));
+        } else if (imageSegmentHeader.getImageCoordinatesRepresentation()
                 != ImageCoordinatesRepresentation.NONE) {
             LOGGER.warn("Unsupported representation: {}. The NITF will be ingested, but image"
                             + " coordinates will not be available.",
-                    imagesegmentHeader.getImageCoordinatesRepresentation());
+                    imageSegmentHeader.getImageCoordinatesRepresentation());
         }
 
-        // concatenate nitf comments to map to Isr.COMMENTS attribute
-        StringBuilder sb = new StringBuilder();
-        sb.append(ImageAttribute.IMAGE_COMMENT_1.getAccessorFunction().apply(imagesegmentHeader));
-        sb.append(ImageAttribute.IMAGE_COMMENT_2.getAccessorFunction().apply(imagesegmentHeader));
-        sb.append(ImageAttribute.IMAGE_COMMENT_3.getAccessorFunction().apply(imagesegmentHeader));
-        metacard.setAttribute(new AttributeImpl(Isr.COMMENTS, sb.toString()));
+
+        setLocation(metacard, polygons);
+
+        // TODO Uncomment these...
+        //setMissionId(metacard, imageSegmentHeader);
+
+        //setComments(metacard, imageSegmentHeader);
     }
 
     private Polygon getPolygonForSegment(ImageSegment segment, GeometryFactory geomFactory) {
@@ -140,6 +134,44 @@ public class NitfImageTransformer extends SegmentHandler {
                         .getLatitude());
         LinearRing externalRing = geomFactory.createLinearRing(coords);
         return geomFactory.createPolygon(externalRing, null);
+    }
+
+    private void setLocation(Metacard metacard, List<Polygon> polygonList) {
+        // Set LOCATION from discovered polygons
+        if (polygonList.size() == 1) {
+            metacard.setAttribute(new AttributeImpl(Core.LOCATION, polygonList.get(0).toText()));
+        } else if (polygonList.size() > 1) {
+            Polygon[] polyAry = polygonList.toArray(new Polygon[polygonList.size()]);
+            MultiPolygon multiPolygon = GEOMETRY_FACTORY.createMultiPolygon(polyAry);
+            metacard.setAttribute(new AttributeImpl(Core.LOCATION, multiPolygon.toText()));
+        }
+    }
+
+    private void setMissionId(Metacard metacard, ImageSegment segment) {
+        final int beginIndex = 8;
+        final int endIndex   = 11;
+
+        Serializable imageIdAttribute = ImageAttribute.IMAGE_IDENTIFIER_2.getAccessorFunction().apply(segment);
+
+        String missionId = "";
+        if(imageIdAttribute != null && imageIdAttribute instanceof String) {
+            String imageId = (String) imageIdAttribute;
+            if(StringUtils.isNotEmpty(imageId) && imageId.length() >= endIndex) {
+                missionId = imageId.substring(beginIndex, endIndex);
+            }
+        }
+
+        metacard.setAttribute(new AttributeImpl(Isr.MISSION_ID, missionId));
+    }
+
+    private void setComments(Metacard metacard, ImageSegment imageSegmentHeader) {
+        StringBuilder sb = new StringBuilder();
+
+        // TODO needs null/empty checking
+        sb.append(ImageAttribute.IMAGE_COMMENT_1.getAccessorFunction().apply(imageSegmentHeader));
+        sb.append(ImageAttribute.IMAGE_COMMENT_2.getAccessorFunction().apply(imageSegmentHeader));
+        sb.append(ImageAttribute.IMAGE_COMMENT_3.getAccessorFunction().apply(imageSegmentHeader));
+        metacard.setAttribute(new AttributeImpl(Isr.COMMENTS, sb.toString()));
     }
 
     private void validateArgument(Object object, String argumentName) {

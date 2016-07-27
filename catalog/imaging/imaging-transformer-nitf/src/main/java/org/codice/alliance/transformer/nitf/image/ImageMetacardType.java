@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ddf.catalog.data.impl.types.CoreAttributes;
 import org.codice.alliance.transformer.nitf.common.NitfAttribute;
 import org.codice.alliance.transformer.nitf.common.NitfHeaderAttribute;
 
@@ -40,7 +41,8 @@ public class ImageMetacardType extends MetacardTypeImpl {
     }
 
     private void getDescriptors() {
-        descriptors.addAll(BasicTypes.BASIC_METACARD.getAttributeDescriptors());
+        //descriptors.addAll(BasicTypes.BASIC_METACARD.getAttributeDescriptors());
+        descriptors.addAll(new CoreAttributes().getAttributeDescriptors());
         descriptors.addAll(getDescriptors(GraphicAttribute.values()));
         descriptors.addAll(getDescriptors(ImageAttribute.values()));
         descriptors.addAll(getDescriptors(LabelAttribute.values()));

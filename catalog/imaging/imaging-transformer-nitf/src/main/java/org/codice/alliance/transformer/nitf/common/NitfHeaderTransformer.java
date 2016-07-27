@@ -16,6 +16,7 @@ package org.codice.alliance.transformer.nitf.common;
 import java.io.IOException;
 import java.util.Date;
 
+import ddf.catalog.data.types.Core;
 import org.codice.imaging.nitf.core.header.NitfHeader;
 import org.codice.imaging.nitf.fluent.NitfSegmentsFlow;
 
@@ -40,10 +41,11 @@ public class NitfHeaderTransformer extends SegmentHandler {
         Date date = (Date) NitfHeaderAttribute.FILE_DATE_AND_TIME.getAccessorFunction()
                 .apply(header);
 
-        metacard.setAttribute(new AttributeImpl(Metacard.TITLE, header.getFileTitle()));
-        metacard.setAttribute(new AttributeImpl(Metacard.MODIFIED, date));
-        metacard.setAttribute(new AttributeImpl(Metacard.CREATED, date));
+        // set derived values that are not explicitly accessed via the Nitf header information
+        metacard.setAttribute(new AttributeImpl(Core.MODIFIED, date));
+        metacard.setAttribute(new AttributeImpl(Core.CREATED, date));
         metacard.setAttribute(new AttributeImpl(Metacard.EFFECTIVE, date));
+
         handleSegmentHeader(metacard, header, NitfHeaderAttribute.values());
     }
 }

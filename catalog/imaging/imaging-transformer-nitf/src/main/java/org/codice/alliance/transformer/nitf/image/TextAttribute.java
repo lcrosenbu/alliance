@@ -32,91 +32,95 @@ import ddf.catalog.data.impl.BasicTypes;
  * NitfAttributes to represent the properties of a TextSegment.
  */
 enum TextAttribute implements NitfAttribute<TextSegment> {
-    FILE_PART_TYPE("filePartType", "TE", segment -> "TE"),
-    TEXT_IDENTIFIER("textIdentifier", "TEXTID", TextSegment::getIdentifier),
-    TEXT_ATTACHMENT_LEVEL("textAttachmentLevel",
+    FILE_PART_TYPE("nitf.text.filePartType",
+            "TE",
+            segment -> "TE"),
+    TEXT_IDENTIFIER("nitf.text.textIdentifier",
+            "TEXTID",
+            TextSegment::getIdentifier),
+    TEXT_ATTACHMENT_LEVEL("nitf.text.textAttachmentLevel",
             "TXTALVL",
             TextSegment::getAttachmentLevel,
             BasicTypes.INTEGER_TYPE),
-    TEXT_DATE_AND_TIME("textDateAndTime",
+    TEXT_DATE_AND_TIME("nitf.text.textDateAndTime",
             "TXTDT",
             segment -> convertNitfDate(segment.getTextDateTime()),
             BasicTypes.DATE_TYPE),
-    TEXT_TITLE("textTitle", "TXTITL", TextSegment::getTextTitle),
-    TEXT_SECURITY_CLASSIFICATION("textSecurityClassification",
+    TEXT_TITLE("nitf.text.textTitle",
+            "TXTITL",
+            TextSegment::getTextTitle),
+    TEXT_SECURITY_CLASSIFICATION("nitf.text.textSecurityClassification",
             "TSCLAS",
             segment -> segment.getSecurityMetadata()
                     .getSecurityClassificationSystem()),
-    TEXT_CLASSIFICATION_SECURITY_SYSTEM("textClassificationSecuritySystem",
+    TEXT_CLASSIFICATION_SECURITY_SYSTEM("nitf.text.textClassificationSecuritySystem",
             "TSCLSY",
             segment -> segment.getSecurityMetadata()
                     .getSecurityClassificationSystem()),
-    TEXT_CODEWORDS("textCodewords",
+    TEXT_CODEWORDS("nitf.text.textCodewords",
             "TSCODE",
             segment -> segment.getSecurityMetadata()
                     .getCodewords()),
-    TEXT_CONTROL_AND_HANDLING("textControlandHandling",
+    TEXT_CONTROL_AND_HANDLING("nitf.text.textControlandHandling",
             "TSCTLH",
             segment -> segment.getSecurityMetadata()
                     .getControlAndHandling()),
-    TEXT_RELEASING_INSTRUCTIONS("textReleasingInstructions",
+    TEXT_RELEASING_INSTRUCTIONS("nitf.text.textReleasingInstructions",
             "TSREL",
             segment -> segment.getSecurityMetadata()
                     .getReleaseInstructions()),
-    TEXT_DECLASSIFICATION_TYPE("textDeclassificationType",
+    TEXT_DECLASSIFICATION_TYPE("nitf.text.textDeclassificationType",
             "TSDCTP",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationType()),
-    TEXT_DECLASSIFICATION_DATE("textDeclassificationDate",
+    TEXT_DECLASSIFICATION_DATE("nitf.text.textDeclassificationDate",
             "TSDCDT",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationDate()),
-    TEXT_DECLASSIFICATION_EXEMPTION("textDeclassificationExemption",
+    TEXT_DECLASSIFICATION_EXEMPTION("nitf.text.textDeclassificationExemption",
             "TSDCXM",
             segment -> segment.getSecurityMetadata()
                     .getDeclassificationExemption()),
-    TEXT_DOWNGRADE("textDowngrade",
+    TEXT_DOWNGRADE("nitf.text.textDowngrade",
             "TSDG",
             segment -> segment.getSecurityMetadata()
                     .getDowngrade()),
-    TEXT_DOWNGRADE_DATE("textDowngradeDate",
+    TEXT_DOWNGRADE_DATE("nitf.text.textDowngradeDate",
             "TSDGDT",
             segment -> segment.getSecurityMetadata()
                     .getDowngradeDate()),
-    TEXT_CLASSIFICATION_TEXT("textClassificationText",
+    TEXT_CLASSIFICATION_TEXT("nitf.text.textClassificationText",
             "TSCLTX",
             segment -> segment.getSecurityMetadata()
                     .getClassificationText()),
-    TEXT_CLASSIFICATION_AUTHORITY_TYPE("textClassificationAuthorityType",
+    TEXT_CLASSIFICATION_AUTHORITY_TYPE("nitf.text.textClassificationAuthorityType",
             "TSCA TP",
             segment -> segment.getSecurityMetadata()
                     .getClassificationAuthorityType()),
-    TEXT_CLASSIFICATION_AUTHORITY("textClassificationAuthority",
+    TEXT_CLASSIFICATION_AUTHORITY("nitf.text.textClassificationAuthority",
             "TSCAUT",
             segment -> segment.getSecurityMetadata()
                     .getClassificationAuthority()),
-    TEXT_CLASSIFICATION_REASON("textClassificationReason",
+    TEXT_CLASSIFICATION_REASON("nitf.text.textClassificationReason",
             "TSCRSN",
             segment -> segment.getSecurityMetadata()
                     .getClassificationReason()),
-    TEXT_SECURITY_SOURCE_DATE("textSecuritySourceDate",
+    TEXT_SECURITY_SOURCE_DATE("nitf.text.textSecuritySourceDate",
             "TSSRDT",
             segment -> segment.getSecurityMetadata()
                     .getSecuritySourceDate()),
-    TEXT_SECURITY_CONTROL_NUMBER("textSecurityControlNumber",
+    TEXT_SECURITY_CONTROL_NUMBER("nitf.text.textSecurityControlNumber",
             "TSCTLN",
             segment -> segment.getSecurityMetadata()
                     .getSecurityControlNumber()),
-    TEXT_FORMAT("textFormat",
+    TEXT_FORMAT("nitf.text.textFormat",
             "TXTFMT",
             segment -> segment.getTextFormat()
                     .name()),
-    TEXT_EXTENDED_SUBHEADER_DATA_LENGTH("textExtendedSubheaderDataLength",
+    TEXT_EXTENDED_SUBHEADER_DATA_LENGTH("nitf.text.textExtendedSubheaderDataLength",
             "TXSHDL",
             TextSegment::getExtendedHeaderDataOverflow,
             BasicTypes.INTEGER_TYPE);
-
-    public static final String ATTRIBUTE_NAME_PREFIX = "nitf.text.";
 
     private String shortName;
 
@@ -136,7 +140,8 @@ enum TextAttribute implements NitfAttribute<TextSegment> {
         this.longName = lName;
         this.shortName = sName;
         this.accessorFunction = accessor;
-        this.attributeDescriptor = new AttributeDescriptorImpl(ATTRIBUTE_NAME_PREFIX + longName,
+        this.attributeDescriptor = new AttributeDescriptorImpl(
+                longName,
                 true,
                 true,
                 false,

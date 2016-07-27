@@ -28,76 +28,78 @@ import ddf.catalog.data.impl.BasicTypes;
  * NitfAttributes to represent the properties of a LabelSegmentHeader.
  */
 enum LabelAttribute implements NitfAttribute<LabelSegment> {
-    FILE_PART_TYPE("filePartType", "LA", segment -> "LA"),
-    LABEL_ID("labelID", "LID", LabelSegment::getIdentifier),
-    LABEL_SECURITY_CLASSIFICATION("labelSecurityClassification",
+    FILE_PART_TYPE("nitf.label.filePartType",
+            "LA",
+            segment -> "LA"),
+    LABEL_ID("nitf.label.labelID",
+            "LID",
+            LabelSegment::getIdentifier),
+    LABEL_SECURITY_CLASSIFICATION("nitf.label.labelSecurityClassification",
             "LSCLAS",
             segment -> segment.getSecurityMetadata()
                     .getSecurityClassification()
                     .name()),
-    LABEL_CODEWORDS("labelCodewords",
+    LABEL_CODEWORDS("nitf.label.labelCodewords",
             "LSCODE",
             segment -> segment.getSecurityMetadata()
                     .getCodewords()),
-    LABEL_CONTROL_AND_HANDLING("labelControlandHandling",
+    LABEL_CONTROL_AND_HANDLING("nitf.label.labelControlandHandling",
             "LSCTLH",
             segment -> segment.getSecurityMetadata()
                     .getControlAndHandling()),
-    LABEL_RELEASING_INSTRUCTIONS("labelReleasingInstructions",
+    LABEL_RELEASING_INSTRUCTIONS("nitf.label.labelReleasingInstructions",
             "LSREL",
             segment -> segment.getSecurityMetadata()
                     .getReleaseInstructions()),
-    LABEL_CLASSIFICATION_AUTHORITY("labelClassificationAuthority",
+    LABEL_CLASSIFICATION_AUTHORITY("nitf.label.labelClassificationAuthority",
             "LSCAUT",
             segment -> segment.getSecurityMetadata()
                     .getClassificationAuthority()),
-    LABEL_SECURITY_CONTROL_NUMBER("labelSecurityControlNumber",
+    LABEL_SECURITY_CONTROL_NUMBER("nitf.label.labelSecurityControlNumber",
             "LSCTLN",
             segment -> segment.getSecurityMetadata()
                     .getSecurityControlNumber()),
-    LABEL_SECURITY_DOWNGRADE("labelSecurityDowngrade",
+    LABEL_SECURITY_DOWNGRADE("nitf.label.labelSecurityDowngrade",
             "LSDWNG",
             segment -> segment.getSecurityMetadata()
                     .getDowngrade()),
-    LABEL_DOWNGRADING_EVENT("labelDowngradingEvent",
+    LABEL_DOWNGRADING_EVENT("nitf.label.labelDowngradingEvent",
             "LSDEVT",
             segment -> segment.getSecurityMetadata()
                     .getDowngradeEvent()),
-    LABEL_CELL_WIDTH("labelCellWidth",
+    LABEL_CELL_WIDTH("nitf.label.labelCellWidth",
             "LCW",
             LabelSegment::getLabelCellWidth,
             BasicTypes.INTEGER_TYPE),
-    LABEL_CELL_HEIGHT("labelCellHeight",
+    LABEL_CELL_HEIGHT("nitf.label.labelCellHeight",
             "LCH",
             LabelSegment::getLabelCellHeight,
             BasicTypes.INTEGER_TYPE),
-    LABEL_DISPLAY_LEVEL("labelDisplayLevel",
+    LABEL_DISPLAY_LEVEL("nitf.label.labelDisplayLevel",
             "LDLVL",
             LabelSegment::getLabelDisplayLevel,
             BasicTypes.INTEGER_TYPE),
-    ATTACHMENT_LEVEL("attachmentLevel",
+    ATTACHMENT_LEVEL("nitf.label.attachmentLevel",
             "LALVL",
             LabelSegment::getAttachmentLevel,
             BasicTypes.INTEGER_TYPE),
-    LABEL_LOCATION("labelLocation",
+    LABEL_LOCATION("nitf.label.labelLocation",
             "LLOC",
             segment -> String.format("%s,%s",
                     segment.getLabelLocationRow(),
                     segment.getLabelLocationColumn())),
-    LABEL_TEXT_COLOR("labelTextColor",
+    LABEL_TEXT_COLOR("nitf.label.labelTextColor",
             "LTC",
             segment -> segment.getLabelTextColour()
                     .toString()),
-    LABEL_BACKGROUND_COLOR("labelBackgroundColor",
+    LABEL_BACKGROUND_COLOR("nitf.label.labelBackgroundColor",
             "LBC",
             segment -> segment.getLabelBackgroundColour()
                     .toString()),
-    EXTENDED_SUBHEADER_DATA_LENGTH("extendedSubheaderDataLength",
+    EXTENDED_SUBHEADER_DATA_LENGTH("nitf.label.extendedSubheaderDataLength",
             "LXSHDL",
             LabelSegment::getExtendedHeaderDataOverflow,
             BasicTypes.INTEGER_TYPE);
-
-    public static final String ATTRIBUTE_NAME_PREFIX = "nitf.label.";
 
     private String shortName;
 
@@ -117,7 +119,8 @@ enum LabelAttribute implements NitfAttribute<LabelSegment> {
         this.accessorFunction = accessor;
         this.shortName = sName;
         this.longName = lName;
-        this.attributeDescriptor = new AttributeDescriptorImpl(ATTRIBUTE_NAME_PREFIX + longName,
+        this.attributeDescriptor = new AttributeDescriptorImpl(
+                longName,
                 true,
                 true,
                 false,
