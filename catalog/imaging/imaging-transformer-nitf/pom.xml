@@ -130,11 +130,8 @@
                             jai-imageio-core,
                             jai-imageio-jpeg2000
                         </Embed-Dependency>
-<<<<<<< HEAD
                         <Export-Package/>
                         <Import-Package>!sun.security.action,*</Import-Package>
-=======
->>>>>>> 4f3865b... CAL-87 Normalizing NITF attributes to use the new taxonomy
                     </instructions>
                 </configuration>
             </plugin>
@@ -156,7 +153,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.89</minimum>
+                                            <minimum>0.88</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>

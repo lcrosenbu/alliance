@@ -28,7 +28,6 @@ import ddf.catalog.data.impl.BasicTypes;
 
 public class SegmentHandler {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SegmentHandler.class);
 
     protected <T> void handleSegmentHeader(Metacard metacard, T segment,
@@ -41,11 +40,17 @@ public class SegmentHandler {
     private <T> void handleValue(Metacard metacard, NitfAttribute attribute, T segment) {
         Function<T, Serializable> accessor = attribute.getAccessorFunction();
         Serializable value = accessor.apply(segment);
+
         AttributeDescriptor descriptor = attribute.getAttributeDescriptor();
 
-        if (descriptor.getType()
-                .equals(BasicTypes.STRING_TYPE) &&
-                value != null && ((String) value).length() == 0) {
+        if (descriptor == null) {
+            LOGGER.error("Could not set metacard attribute " + attribute.getLongName()
+                    + " since it does not belong to this metacard type");
+            return;
+        }
+
+        if (descriptor.getType().equals(BasicTypes.STRING_TYPE) && value != null
+                && ((String) value).length() == 0) {
             value = null;
         }
 

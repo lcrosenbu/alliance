@@ -72,24 +72,7 @@ public class NitfImageTransformer extends SegmentHandler {
 
         nitfSegmentsFlow.forEachImageSegment(segment -> handleImageSegmentHeader(metacard,
                 segment,
-<<<<<<< HEAD
-                polygonList))
-                .forEachGraphicSegment(segment -> handleSegmentHeader(metacard,
-                        segment,
-                        GraphicAttribute.values()))
-                .forEachTextSegment(segment -> handleSegmentHeader(metacard,
-                        segment,
-                        TextAttribute.values()))
-                .forEachSymbolSegment(segment -> handleSegmentHeader(metacard,
-                        segment,
-                        SymbolAttribute.values()))
-                .forEachLabelSegment(segment -> handleSegmentHeader(metacard,
-                        segment,
-                        LabelAttribute.values()))
-                .end();
-=======
                 polygonList));
->>>>>>> 4f3865b... CAL-87 Normalizing NITF attributes to use the new taxonomy
 
         // Set GEOGRAPHY from discovered polygons
         if (polygonList.size() == 1) {

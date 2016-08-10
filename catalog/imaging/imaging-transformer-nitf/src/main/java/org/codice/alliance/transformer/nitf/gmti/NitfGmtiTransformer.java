@@ -92,7 +92,7 @@ public class NitfGmtiTransformer extends SegmentHandler {
                 targets.stream().forEach(group -> handleSegmentHeader(metacard, group,
                         IndexedMtirpbAttribute.values()));
             } catch (NitfFormatException e) {
-                LOGGER.error(e.getMessage(), e);
+                LOGGER.warn("Could not parse NITF target information: " + e.getMessage(), e);
             }
         });
     }

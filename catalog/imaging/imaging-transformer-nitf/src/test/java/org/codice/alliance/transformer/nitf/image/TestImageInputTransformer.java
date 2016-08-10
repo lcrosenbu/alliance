@@ -219,35 +219,6 @@ public class TestImageInputTransformer {
         transformer.handleComments(metacard, commentsList);
         assertThat(metacard.getAttribute(Isr.COMMENTS.toString()),
                 is(nullValue()));
-<<<<<<< HEAD
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.IMAGE_COMPRESSION)
-                .getValue(), is("NOTCOMPRESSED"));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.NUMBER_OF_BANDS)
-                .getValue(), is(1));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.IMAGE_MODE)
-                .getValue(), is("BLOCKINTERLEVE"));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.NUMBER_OF_BLOCKS_PER_ROW)
-                .getValue(), is(1));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.NUMBER_OF_BLOCKS_PER_COLUMN)
-                .getValue(), is(1));
-        assertThat(metacard.getAttribute(
-                "nitf.image." + ImageAttribute.NUMBER_OF_PIXELS_PER_BLOCK_HORIZONTAL)
-                .getValue(), is(1024l));
-        assertThat(metacard.getAttribute(
-                "nitf.image." + ImageAttribute.NUMBER_OF_PIXELS_PER_BLOCK_VERTICAL)
-                .getValue(), is(1024l));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.NUMBER_OF_BITS_PER_PIXEL)
-                .getValue(), is(8));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.IMAGE_DISPLAY_LEVEL)
-                .getValue(), is(1));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.IMAGE_ATTACHMENT_LEVEL)
-                .getValue(), is(0));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.IMAGE_LOCATION)
-                .getValue(), is("0,0"));
-        assertThat(metacard.getAttribute("nitf.image." + ImageAttribute.IMAGE_MAGNIFICATION)
-                .getValue(), is("1.0"));
-=======
->>>>>>> 4f3865b... CAL-87 Normalizing NITF attributes to use the new taxonomy
     }
 
     private void validateDate(Metacard metacard, Date date, String expectedDate) {

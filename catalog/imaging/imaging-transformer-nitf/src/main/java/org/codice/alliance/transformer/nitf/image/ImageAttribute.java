@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.codice.alliance.catalog.core.api.impl.types.IsrAttributes;
 import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.NitfAttribute;
 import org.codice.imaging.nitf.core.common.DateTime;
@@ -28,9 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ddf.catalog.data.AttributeDescriptor;
-import ddf.catalog.data.AttributeType;
-import ddf.catalog.data.impl.AttributeDescriptorImpl;
-import ddf.catalog.data.impl.BasicTypes;
+import ddf.catalog.data.MetacardType;
+import ddf.catalog.data.impl.types.DateTimeAttributes;
+import ddf.catalog.data.impl.types.MediaAttributes;
 import ddf.catalog.data.types.Media;
 
 /**
@@ -40,36 +41,42 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
     IMAGE_DATE_AND_TIME(ddf.catalog.data.types.DateTime.START,
             "IDATIM",
             segment -> convertNitfDate(segment.getImageDateTime()),
-            BasicTypes.DATE_TYPE),
+            new DateTimeAttributes()),
     TARGET_IDENTIFIER(Isr.TARGET_ID,
             "TGTID",
-            segment -> getTargetId(segment)),
+            segment -> getTargetId(segment),
+            new IsrAttributes()),
     IMAGE_IDENTIFIER_2(Isr.IMAGE_ID,
             "IID2",
-            ImageSegment::getImageIdentifier2),
+            ImageSegment::getImageIdentifier2,
+            new IsrAttributes()),
     IMAGE_SOURCE(Isr.ORIGINAL_SOURCE,
             "ISORCE",
-            ImageSegment::getImageSource),
+            ImageSegment::getImageSource,
+            new IsrAttributes()),
     NUMBER_OF_SIGNIFICANT_ROWS_IN_IMAGE(Media.HEIGHT,
             "NROWS",
             ImageSegment::getNumberOfRows,
-            BasicTypes.LONG_TYPE),
+            new MediaAttributes()),
     NUMBER_OF_SIGNIFICANT_COLUMNS_IN_IMAGE(Media.WIDTH,
             "NCOLS",
             ImageSegment::getNumberOfColumns,
-            BasicTypes.LONG_TYPE),
+            new MediaAttributes()),
     IMAGE_REPRESENTATION(Media.ENCODING,
             "IREP",
             segment -> segment.getImageRepresentation()
-                    .name()),
+                    .name(),
+            new MediaAttributes()),
     IMAGE_CATEGORY(Isr.CATEGORY,
             "ICAT",
             segment -> segment.getImageCategory()
-                    .name()),
+                    .name(),
+            new IsrAttributes()),
     IMAGE_COMPRESSION(Media.COMPRESSION,
             "IC",
             segment -> segment.getImageCompression()
-                    .name());
+                    .name(),
+            new MediaAttributes());
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageAttribute.class);
 
@@ -80,23 +87,16 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
     private Function<ImageSegment, Serializable> accessorFunction;
 
     private AttributeDescriptor attributeDescriptor;
-
-    ImageAttribute(final String lName, final String sName,
-            final Function<ImageSegment, Serializable> accessor) {
-        this(lName, sName, accessor, BasicTypes.STRING_TYPE);
-    }
-
-    ImageAttribute(final String lName, final String sName,
-            final Function<ImageSegment, Serializable> accessor, AttributeType attributeType) {
+    
+    ImageAttribute(final String lName,
+                   final String sName,
+                   final Function<ImageSegment, Serializable> accessor,
+                   MetacardType metacardType) {
         this.accessorFunction = accessor;
         this.shortName = sName;
         this.longName = lName;
-        this.attributeDescriptor = new AttributeDescriptorImpl(longName,
-                true,
-                true,
-                false,
-                true,
-                attributeType);
+        // retrieving metacard attribute descriptor for this attribute to prevent later lookups
+        this.attributeDescriptor = metacardType.getAttributeDescriptor(longName);
     }
 
     private static String getTargetId(ImageSegment imageSegment) {
@@ -155,6 +155,14 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AttributeDescriptor getAttributeDescriptor() {
+        return this.attributeDescriptor;
+    }
+
+    /**
      * Equivalent to getLongName()
      *
      * @return the attribute's long name.
@@ -162,13 +170,5 @@ public enum ImageAttribute implements NitfAttribute<ImageSegment> {
     @Override
     public String toString() {
         return getLongName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AttributeDescriptor getAttributeDescriptor() {
-        return this.attributeDescriptor;
     }
 }

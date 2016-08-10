@@ -207,8 +207,8 @@ public class TreTestUtility {
         when(imageSegment.getImageIdentifier2()).thenReturn("");
         when(imageSegment.getSecurityMetadata()).thenReturn(securityMetadata);
         when(imageSegment.getImageSource()).thenReturn("");
-        when(imageSegment.getNumberOfRows()).thenReturn(2048l);
-        when(imageSegment.getNumberOfColumns()).thenReturn(2048l);
+        when(imageSegment.getNumberOfRows()).thenReturn(2048L);
+        when(imageSegment.getNumberOfColumns()).thenReturn(2048L);
         when(imageSegment.getPixelValueType()).thenReturn(PixelValueType.INTEGER);
         when(imageSegment.getImageRepresentation()).thenReturn(ImageRepresentation.RGBTRUECOLOUR);
         when(imageSegment.getImageCategory()).thenReturn(ImageCategory.MULTISPECTRAL);
