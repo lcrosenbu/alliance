@@ -42,6 +42,7 @@ import ddf.catalog.content.plugin.PreCreateStoragePlugin;
 import ddf.catalog.content.plugin.PreUpdateStoragePlugin;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.impl.AttributeImpl;
+import ddf.catalog.data.types.Core;
 import ddf.catalog.plugin.PluginExecutionException;
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -165,7 +166,7 @@ public class NitfPreStoragePlugin implements PreCreateStoragePlugin, PreUpdateSt
             byte[] thumbnailImage = scaleImage(bufferedImage, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
 
             if (thumbnailImage.length > 0) {
-                metacard.setAttribute(new AttributeImpl(Metacard.THUMBNAIL, thumbnailImage));
+                metacard.setAttribute(new AttributeImpl(Core.THUMBNAIL, thumbnailImage));
             }
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
@@ -184,7 +185,7 @@ public class NitfPreStoragePlugin implements PreCreateStoragePlugin, PreUpdateSt
                     overviewBytes.length,
                     metacard);
 
-            metacard.setAttribute(new AttributeImpl(Metacard.DERIVED_RESOURCE_URI,
+            metacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI,
                     contentItem.getUri()));
 
             return contentItem;

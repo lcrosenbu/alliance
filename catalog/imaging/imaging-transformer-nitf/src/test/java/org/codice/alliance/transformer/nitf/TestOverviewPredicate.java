@@ -21,6 +21,7 @@ import org.junit.Test;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
+import ddf.catalog.data.types.Core;
 
 public class TestOverviewPredicate {
     private final OverviewPredicate predicate = new OverviewPredicate();
@@ -28,7 +29,7 @@ public class TestOverviewPredicate {
     @Test
     public void testOverview() {
         final Metacard metacard = new MetacardImpl();
-        metacard.setAttribute(new AttributeImpl(Metacard.DERIVED_RESOURCE_URI,
+        metacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI,
                 "content:abc123#overview"));
         assertThat(predicate.test(metacard), is(true));
     }
@@ -41,7 +42,7 @@ public class TestOverviewPredicate {
     @Test
     public void testNoOverview() {
         final Metacard metacard = new MetacardImpl();
-        metacard.setAttribute(new AttributeImpl(Metacard.DERIVED_RESOURCE_URI, "content:abc123"));
+        metacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI, "content:abc123"));
         assertThat(predicate.test(metacard), is(false));
     }
 }

@@ -54,6 +54,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.codice.alliance.catalog.core</groupId>
+            <artifactId>catalog-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codice.alliance.catalog.core</groupId>
+            <artifactId>catalog-core-api-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.codice.imaging.nitf</groupId>
             <artifactId>codice-imaging-nitf-core</artifactId>
         </dependency>
@@ -118,8 +130,11 @@
                             jai-imageio-core,
                             jai-imageio-jpeg2000
                         </Embed-Dependency>
+<<<<<<< HEAD
                         <Export-Package/>
                         <Import-Package>!sun.security.action,*</Import-Package>
+=======
+>>>>>>> 4f3865b... CAL-87 Normalizing NITF attributes to use the new taxonomy
                     </instructions>
                 </configuration>
             </plugin>

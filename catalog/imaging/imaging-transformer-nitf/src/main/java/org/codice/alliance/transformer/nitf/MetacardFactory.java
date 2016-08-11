@@ -20,6 +20,8 @@ import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
+import ddf.catalog.data.types.Core;
+import ddf.catalog.data.types.Media;
 
 public class MetacardFactory {
 
@@ -47,10 +49,11 @@ public class MetacardFactory {
 
     public Metacard createMetacard(String id) {
         Metacard metacard = new MetacardImpl(metacardType);
+        metacard.setAttribute(new AttributeImpl(Media.TYPE, MIME_TYPE.toString()));
         metacard.setAttribute(new AttributeImpl(Metacard.CONTENT_TYPE, MIME_TYPE.toString()));
 
         if (id != null) {
-            metacard.setAttribute(new AttributeImpl(Metacard.ID, id));
+            metacard.setAttribute(new AttributeImpl(Core.ID, id));
         }
 
         return metacard;

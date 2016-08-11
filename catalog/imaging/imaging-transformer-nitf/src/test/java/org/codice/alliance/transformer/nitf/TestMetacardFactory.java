@@ -17,22 +17,35 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import org.codice.alliance.transformer.nitf.image.ImageMetacardType;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
+import ddf.catalog.data.MetacardType;
+import ddf.catalog.data.impl.MetacardTypeImpl;
+import ddf.catalog.data.types.Core;
+import ddf.catalog.data.types.Media;
 
 public class TestMetacardFactory {
     private MetacardFactory metacardFactory;
 
     private static final String TEST_ID = "101";
 
+    private static final String IMAGE_METACARD = "nitf";
+
+    private static final String GMTI_METACARD = "gmti";
+
+    List<MetacardType> metacardTypeList = new ArrayList<>();
+
     @Before
     public void setUp() {
         this.metacardFactory = new MetacardFactory();
-        metacardFactory.setMetacardType(new ImageMetacardType());
+        metacardFactory.setMetacardType(new MetacardTypeImpl(
+                IMAGE_METACARD, metacardTypeList));
     }
 
     @Test
@@ -46,7 +59,7 @@ public class TestMetacardFactory {
         Metacard metacard = metacardFactory.createMetacard(TEST_ID);
         validateMetacard(metacard);
 
-        Attribute attribute = metacard.getAttribute(Metacard.ID);
+        Attribute attribute = metacard.getAttribute(Core.ID);
         String id = attribute.getValue()
                 .toString();
 
@@ -55,7 +68,7 @@ public class TestMetacardFactory {
     }
 
     private void validateMetacard(Metacard metacard) {
-        Attribute attribute = metacard.getAttribute(Metacard.CONTENT_TYPE);
+        Attribute attribute = metacard.getAttribute(Media.TYPE);
 
         assertThat(attribute, is(notNullValue()));
         assertThat(attribute.getValue(), is(MetacardFactory.MIME_TYPE_STRING));

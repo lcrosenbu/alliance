@@ -38,6 +38,7 @@ import ddf.catalog.content.operation.CreateStorageRequest;
 import ddf.catalog.content.operation.UpdateStorageRequest;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
+import ddf.catalog.data.types.Core;
 import ddf.catalog.plugin.PluginExecutionException;
 
 /**
@@ -151,7 +152,7 @@ public class TestPreStoragePluginMulti {
                 .get(1);
         assertThat(thumbnail1.getName(), is("thumbnail"));
         assertThat(thumbnail1.getValue(), is(notNullValue()));
-        assertThat(overview1.getName(), is(Metacard.DERIVED_RESOURCE_URI));
+        assertThat(overview1.getName(), is(Core.DERIVED_RESOURCE_URI));
         assertThat(overview1.getValue(), is(notNullValue()));
     }
 

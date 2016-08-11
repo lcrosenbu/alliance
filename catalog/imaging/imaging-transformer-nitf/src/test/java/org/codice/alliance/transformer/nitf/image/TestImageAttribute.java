@@ -18,10 +18,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.codice.imaging.nitf.core.common.NitfFormatException;
@@ -31,22 +28,11 @@ import org.junit.Test;
 
 public class TestImageAttribute {
 
-    public static final String COMMENT_1 = "comment 1";
-
-    public static final String COMMENT_2 = "comment 2";
-
-    public static final String COMMENT_3 = "comment 3";
-
     private ImageSegment imageSegment;
 
     @Before
     public void setUp() {
         this.imageSegment = mock(ImageSegment.class);
-        List<String> imageSegmentComments = new ArrayList<String>();
-        imageSegmentComments.add(COMMENT_1);
-        imageSegmentComments.add(COMMENT_2);
-        imageSegmentComments.add(COMMENT_3);
-        when(imageSegment.getImageComments()).thenReturn(imageSegmentComments);
     }
 
     @Test
@@ -58,12 +44,13 @@ public class TestImageAttribute {
                 .apply(imageSegment), is(nullValue()));
         assertThat(ImageAttribute.IMAGE_DATE_AND_TIME.getAccessorFunction()
                 .apply(imageSegment), is(nullValue()));
-
-        assertThat(ImageAttribute.IMAGE_COMMENT_1.getAccessorFunction()
-                .apply(imageSegment), is(COMMENT_1));
-        assertThat(ImageAttribute.IMAGE_COMMENT_2.getAccessorFunction()
-                .apply(imageSegment), is(COMMENT_2));
-        assertThat(ImageAttribute.IMAGE_COMMENT_3.getAccessorFunction()
-                .apply(imageSegment), is(COMMENT_3));
+        assertThat(ImageAttribute.IMAGE_IDENTIFIER_2.getAccessorFunction()
+                .apply(imageSegment), is(nullValue()));
+        assertThat(ImageAttribute.NUMBER_OF_SIGNIFICANT_ROWS_IN_IMAGE.getAccessorFunction()
+                .apply(imageSegment), is(0L));
+        assertThat(ImageAttribute.NUMBER_OF_SIGNIFICANT_COLUMNS_IN_IMAGE.getAccessorFunction()
+                .apply(imageSegment), is(0L));
+        assertThat(ImageAttribute.IMAGE_SOURCE.getAccessorFunction()
+                .apply(imageSegment), is(nullValue()));
     }
 }

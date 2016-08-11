@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 import ddf.catalog.content.data.ContentItem;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
+import ddf.catalog.data.types.Core;
 
 public class OverviewPredicate implements Predicate<Metacard> {
     private final Predicate<String> isDerivedResourceOverviewUri =
@@ -26,7 +27,7 @@ public class OverviewPredicate implements Predicate<Metacard> {
 
     @Override
     public boolean test(Metacard metacard) {
-        final Attribute derivedResourceUris = metacard.getAttribute(Metacard.DERIVED_RESOURCE_URI);
+        final Attribute derivedResourceUris = metacard.getAttribute(Core.DERIVED_RESOURCE_URI);
 
         if (derivedResourceUris != null) {
             return derivedResourceUris.getValues()

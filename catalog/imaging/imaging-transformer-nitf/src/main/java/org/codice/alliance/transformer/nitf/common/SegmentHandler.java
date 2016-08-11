@@ -17,6 +17,9 @@ import java.io.Serializable;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.AttributeDescriptor;
 import ddf.catalog.data.Metacard;
@@ -24,6 +27,9 @@ import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.BasicTypes;
 
 public class SegmentHandler {
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SegmentHandler.class);
 
     protected <T> void handleSegmentHeader(Metacard metacard, T segment,
             NitfAttribute[] attributes) {
@@ -45,6 +51,7 @@ public class SegmentHandler {
 
         if (value != null) {
             Attribute catalogAttribute = populateAttribute(metacard, descriptor.getName(), value);
+            LOGGER.debug("Setting the metacard attribute [{}, {}]", descriptor.getName(), value);
             metacard.setAttribute(catalogAttribute);
         }
     }

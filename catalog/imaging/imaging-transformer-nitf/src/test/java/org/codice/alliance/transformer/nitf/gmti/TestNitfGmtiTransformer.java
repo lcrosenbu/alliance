@@ -14,11 +14,9 @@
 package org.codice.alliance.transformer.nitf.gmti;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,24 +24,26 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
-import java.util.stream.Stream;
 
 import org.codice.alliance.transformer.nitf.MetacardFactory;
 import org.codice.alliance.transformer.nitf.TreTestUtility;
 import org.codice.alliance.transformer.nitf.common.NitfHeaderTransformer;
 import org.codice.imaging.nitf.core.common.NitfFormatException;
-import org.codice.imaging.nitf.core.tre.Tre;
 import org.codice.imaging.nitf.fluent.NitfParserInputFlow;
 import org.codice.imaging.nitf.fluent.NitfSegmentsFlow;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 import ddf.catalog.data.Metacard;
+import ddf.catalog.data.MetacardType;
 import ddf.catalog.data.impl.MetacardImpl;
+import ddf.catalog.data.impl.MetacardTypeImpl;
 import ddf.catalog.transform.CatalogTransformerException;
 
 public class TestNitfGmtiTransformer {
@@ -55,13 +55,18 @@ public class TestNitfGmtiTransformer {
 
     private NitfGmtiTransformer nitfGmtiTransformer;
 
+    private static final String GMTI_METACARD = "gmti";
+
+    List<MetacardType> metacardTypeList = new ArrayList<>();
+
     @Before
     public void setUp() {
         this.metacardFactory = new MetacardFactory();
-        this.metacardFactory.setMetacardType(new GmtiMetacardType());
+        metacardFactory.setMetacardType(new MetacardTypeImpl(
+                GMTI_METACARD, metacardTypeList));
         this.nitfHeaderTransformer = new NitfHeaderTransformer();
         this.nitfGmtiTransformer = new NitfGmtiTransformer();
-        this.nitfGmtiTransformer.setWktReader(new WKTReader());
+        this.nitfGmtiTransformer.setGeometryFactory(new GeometryFactory());
 
         TreTestUtility.createFileIfNecessary(GMTI_TEST_NITF, TreTestUtility::createNitfNoImageTres);
     }
@@ -95,75 +100,15 @@ public class TestNitfGmtiTransformer {
         assertThat(metacard.getMetacardType()
                 .getName(), is("gmti"));
 
-        assertThat(metacard.getAttribute(MtirpbAttribute.AIRCRAFT_ALTITUDE.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("150000"));
         assertThat(metacard.getAttribute(MtirpbAttribute.NUMBER_OF_VALID_TARGETS.getAttributeDescriptor()
                 .getName())
                 .getValue(), is("001"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.AIRCRAFT_ALTITUDE_UNITS.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("m"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.AIRCRAFT_HEADING.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("000"));
         assertThat(metacard.getAttribute(MtirpbAttribute.AIRCRAFT_LOCATION.getAttributeDescriptor()
                 .getName())
-                .getValue(), is("+52.123456-004.123456"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.COSINE_OF_GRAZE_ANGLE.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("0.03111"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.DESTINATION_POINT.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("00"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.PATCH_NUMBER.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("0001"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.SCAN_DATE_AND_TIME.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("20141108235219"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.WIDE_AREA_MTI_BAR_NUMBER.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("1"));
-        assertThat(metacard.getAttribute(MtirpbAttribute.WIDE_AREA_MTI_FRAME_NUMBER.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("00001"));
-
-        assertThat(metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_AMPLITUDE.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("06"));
-        assertThat(metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_CLASSIFICATION_CATEGORY.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("Unknown"));
-        assertThat(metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_GROUND_SPEED.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("000"));
-        assertThat(metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_HEADING.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("000"));
+                .getValue(), is("POINT (+52.123456 -004.123456)"));
         assertThat(metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_LOCATION.getAttributeDescriptor()
                 .getName())
-                .getValue(), is("+52.1234567-004.1234567"));
-        assertThat(metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_LOCATION_ACCURACY.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("000.00"));
-        assertThat(metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_RADIAL_VELOCITY.getAttributeDescriptor()
-                .getName())
-                .getValue(), is("+013"));
-    }
-
-    @Test
-    public void testIndexedMtirpbAttributeLongNames() {
-        Stream.of(IndexedMtirpbAttribute.values())
-                .forEach(attribute -> assertThat(attribute.getLongName(), is(notNullValue())));
-    }
-
-    @Test
-    public void testClassificationCategory() throws NitfFormatException {
-        Tre tre = mock(Tre.class);
-        when(tre.getFieldValue(IndexedMtirpbAttribute.INDEXED_TARGET_CLASSIFICATION_CATEGORY.getShortName())).thenReturn(null);
-        String value = IndexedMtirpbAttribute.INDEXED_TARGET_CLASSIFICATION_CATEGORY.getAccessorFunction().apply(tre).toString();
-        assertThat(value, is("Unknown"));
+                .getValue(), is("MULTIPOINT ((52.1234567 -4.1234567))"));
     }
 
     private void validateDate(Date date, String expectedDate) {

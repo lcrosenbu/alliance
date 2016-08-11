@@ -19,6 +19,7 @@
     <feature name="imaging-app" install="auto" version="${project.version}"
              description="The Alliance Imaging Application provides support for ingesting and searching for NITF products.  ::Alliance Imaging">
         <feature prerequisite="true">catalog-app</feature>
+        <bundle dependency="true">mvn:org.codice.alliance.catalog.core/catalog-core-api/${project.version}</bundle>
         <bundle>mvn:org.codice.alliance.imaging/imaging-service-api/${project.version}</bundle>
         <bundle>mvn:org.codice.alliance.imaging/imaging-service-impl/${project.version}</bundle>
         <bundle>mvn:org.codice.alliance.imaging/imaging-transformer-nitf/${project.version}</bundle>

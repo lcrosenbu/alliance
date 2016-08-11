@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.SegmentHandler;
 import org.codice.imaging.nitf.core.image.ImageCoordinates;
 import org.codice.imaging.nitf.core.image.ImageCoordinatesRepresentation;
@@ -34,6 +36,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.impl.AttributeImpl;
+import ddf.catalog.data.types.Core;
 import ddf.catalog.transform.CatalogTransformerException;
 
 /**
@@ -46,12 +49,16 @@ public class NitfImageTransformer extends SegmentHandler {
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(
             PrecisionModel.FLOATING), 4326);
 
+    private static final String IMAGE_DATATYPE = "Image";
+
     public Metacard transform(NitfSegmentsFlow nitfSegmentsFlow, Metacard metacard)
             throws IOException, CatalogTransformerException {
 
         validateArgument(nitfSegmentsFlow, "nitfSegmentsFlow");
         validateArgument(metacard, "metacard");
 
+        LOGGER.debug("Setting the metacard attribute [{}, {}]", Core.DATATYPE, IMAGE_DATATYPE);
+        metacard.setAttribute(new AttributeImpl(Core.DATATYPE, IMAGE_DATATYPE));
         handleSegments(nitfSegmentsFlow, metacard);
         return metacard;
     }
@@ -65,6 +72,7 @@ public class NitfImageTransformer extends SegmentHandler {
 
         nitfSegmentsFlow.forEachImageSegment(segment -> handleImageSegmentHeader(metacard,
                 segment,
+<<<<<<< HEAD
                 polygonList))
                 .forEachGraphicSegment(segment -> handleSegmentHeader(metacard,
                         segment,
@@ -79,16 +87,19 @@ public class NitfImageTransformer extends SegmentHandler {
                         segment,
                         LabelAttribute.values()))
                 .end();
+=======
+                polygonList));
+>>>>>>> 4f3865b... CAL-87 Normalizing NITF attributes to use the new taxonomy
 
         // Set GEOGRAPHY from discovered polygons
         if (polygonList.size() == 1) {
-            metacard.setAttribute(new AttributeImpl(Metacard.GEOGRAPHY,
+            metacard.setAttribute(new AttributeImpl(Core.LOCATION,
                     polygonList.get(0)
                             .toText()));
         } else if (polygonList.size() > 1) {
             Polygon[] polyAry = polygonList.toArray(new Polygon[polygonList.size()]);
             MultiPolygon multiPolygon = GEOMETRY_FACTORY.createMultiPolygon(polyAry);
-            metacard.setAttribute(new AttributeImpl(Metacard.GEOGRAPHY, multiPolygon.toText()));
+            metacard.setAttribute(new AttributeImpl(Core.LOCATION, multiPolygon.toText()));
         }
     }
 
@@ -96,18 +107,57 @@ public class NitfImageTransformer extends SegmentHandler {
             List<Polygon> polygons) {
 
         handleSegmentHeader(metacard, imagesegmentHeader, ImageAttribute.values());
+        
+        // custom handling of image header fields
+        handleGeometry(metacard, imagesegmentHeader, polygons);
+        handleMissionIdentifier(metacard, imagesegmentHeader.getImageIdentifier2());
+        handleComments(metacard, imagesegmentHeader.getImageComments());
+    }
 
-        // handle geometry
-        if ((imagesegmentHeader.getImageCoordinatesRepresentation()
-                == ImageCoordinatesRepresentation.GEOGRAPHIC) || (
-                imagesegmentHeader.getImageCoordinatesRepresentation()
-                        == ImageCoordinatesRepresentation.DECIMALDEGREES)) {
-            polygons.add(getPolygonForSegment(imagesegmentHeader, GEOMETRY_FACTORY));
-        } else if (imagesegmentHeader.getImageCoordinatesRepresentation()
-                != ImageCoordinatesRepresentation.NONE) {
+    protected void handleGeometry(Metacard metacard, ImageSegment imageSegmentHeader, List<Polygon> polygons) {
+        ImageCoordinatesRepresentation imageCoordinatesRepresentation =
+                imageSegmentHeader.getImageCoordinatesRepresentation();
+
+        if (imageCoordinatesRepresentation == ImageCoordinatesRepresentation.GEOGRAPHIC ||
+                imageCoordinatesRepresentation == ImageCoordinatesRepresentation.DECIMALDEGREES) {
+            polygons.add(getPolygonForSegment(imageSegmentHeader, GEOMETRY_FACTORY));
+
+        } else if (imageCoordinatesRepresentation != ImageCoordinatesRepresentation.NONE) {
             LOGGER.warn("Unsupported representation: {}. The NITF will be ingested, but image"
                             + " coordinates will not be available.",
-                    imagesegmentHeader.getImageCoordinatesRepresentation());
+                    imageCoordinatesRepresentation);
+        }
+    }
+
+    /*
+     * Extracts the mission identifier from the image segment IID2 field
+     */
+    protected void handleMissionIdentifier(Metacard metacard, String imageIdentifier2) {
+        final int startIndex = 7; // inclusive
+        final int endIndex = 11; // exclusive
+
+        if (StringUtils.isNotBlank(imageIdentifier2) && imageIdentifier2.length() > endIndex) {
+            String missionId = imageIdentifier2.substring(startIndex, endIndex);
+
+            LOGGER.debug("Setting the metacard attribute [{}, {}]", Isr.MISSION_ID, missionId);
+            metacard.setAttribute(new AttributeImpl(Isr.MISSION_ID, missionId));
+        }
+    }
+
+    /*
+     * Appends the ICOMn fields together to form a single block comment
+     */
+    protected void handleComments(Metacard metacard, List<String> comments) {
+        if (comments.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            comments.stream().forEach(comment -> {
+                if (StringUtils.isNotBlank(comment)) {
+                    sb.append(comment); // no delimiter
+                }
+            });
+
+            LOGGER.debug("Setting the metacard attribute [{}, {}]", Isr.COMMENTS, sb.toString());
+            metacard.setAttribute(new AttributeImpl(Isr.COMMENTS, sb.toString()));
         }
     }
 

@@ -34,6 +34,7 @@ import ddf.catalog.data.BinaryContent;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
+import ddf.catalog.data.types.Core;
 import ddf.catalog.transform.CatalogTransformerException;
 import ddf.catalog.transform.MetacardTransformer;
 
@@ -74,7 +75,7 @@ public class TestOverviewSupplier {
     @Test
     public void testOverview() {
         final Metacard metacard = new MetacardImpl();
-        metacard.setAttribute(new AttributeImpl(Metacard.DERIVED_RESOURCE_URI,
+        metacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI,
                 "content:abc123#overview"));
         assertThat(supplier.apply(metacard, null)
                 .isPresent(), is(true));

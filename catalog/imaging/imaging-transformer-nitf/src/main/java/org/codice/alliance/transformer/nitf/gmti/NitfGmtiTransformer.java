@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.transformer.nitf.common.SegmentHandler;
 import org.codice.imaging.nitf.core.common.NitfFormatException;
 import org.codice.imaging.nitf.core.common.TaggedRecordExtensionHandler;
@@ -29,12 +30,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.impl.AttributeImpl;
+import ddf.catalog.data.types.Core;
 import ddf.catalog.transform.CatalogTransformerException;
 
 public class NitfGmtiTransformer extends SegmentHandler {
@@ -47,15 +50,15 @@ public class NitfGmtiTransformer extends SegmentHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NitfGmtiTransformer.class);
 
-    private static final String LOCATION_REGEX =
-            "([+\\-]\\d{2}+\\.\\d{7}+)([+\\-]\\d{3}+\\.\\d{7})";
+    // Handles locations that have either 6 or 7 decimal places
+    private static final String LOCATION_REGEX = "([+\\-]\\d{2}+\\.\\d{6,7}+)([+\\-]\\d{3}+\\.\\d{6,7})";
 
     private static final Pattern LOCATION_PATTERN = Pattern.compile(LOCATION_REGEX);
 
-    private WKTReader wktReader;
+    private GeometryFactory geometryFactory;
 
     public Metacard transform(NitfSegmentsFlow nitfSegmentsFlow, Metacard metacard)
-            throws IOException, CatalogTransformerException {
+        throws IOException, CatalogTransformerException {
 
         if (nitfSegmentsFlow == null) {
             throw new IllegalArgumentException("argument 'nitfSegmentsFlow' may not be null.");
@@ -68,69 +71,109 @@ public class NitfGmtiTransformer extends SegmentHandler {
         nitfSegmentsFlow.fileHeader(header -> handleHeader(header, metacard))
                 .end();
 
-        String locationString = setLocation(metacard);
-
-        try {
-            LOGGER.debug("Location = " + locationString);
-
-            if (locationString != null) {
-                //validate the wkt
-                Geometry geometry = wktReader.read(locationString);
-                metacard.setAttribute(new AttributeImpl(Metacard.GEOGRAPHY, geometry.toText()));
-            }
-        } catch (ParseException e) {
-            LOGGER.warn(e.getMessage(), e);
-        }
+        transformTargetLocation(metacard);
+        transformAircraftLocation(metacard);
 
         return metacard;
     }
 
     private void handleHeader(TaggedRecordExtensionHandler header, Metacard metacard) {
-        List<Tre> tres = header.getTREsRawStructure()
-                .getTREs();
+        List<Tre> tres = header.getTREsRawStructure().getTREs();
 
-        tres.stream()
-                .filter(tre -> ACFTB.equals(tre.getName()
-                        .trim()))
+        tres.stream().filter(tre -> ACFTB.equals(tre.getName().trim()))
                 .forEach(tre -> handleSegmentHeader(metacard, tre, AcftbAttribute.values()));
 
-        tres.stream()
-                .filter(tre -> MTIRPB.equals(tre.getName()
-                        .trim()))
-                .forEach(tre -> {
-                    handleSegmentHeader(metacard, tre, MtirpbAttribute.values());
+        tres.stream().filter(tre -> MTIRPB.equals(tre.getName().trim())).forEach(tre -> {
+            handleSegmentHeader(metacard, tre, MtirpbAttribute.values());
 
-                    try {
-                        List<TreGroup> targets = tre.getEntry(TARGETS)
-                                .getGroups();
+            try {
+                List<TreGroup> targets = tre.getEntry(TARGETS).getGroups();
 
-                        targets.stream()
-                                .forEach(group -> handleSegmentHeader(metacard,
-                                        group,
-                                        IndexedMtirpbAttribute.values()));
-                    } catch (NitfFormatException e) {
-                        LOGGER.error(e.getMessage(), e);
-                    }
-                });
+                targets.stream().forEach(group -> handleSegmentHeader(metacard, group,
+                        IndexedMtirpbAttribute.values()));
+            } catch (NitfFormatException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        });
     }
 
-    private String setLocation(Metacard metacard) {
-        Attribute locationAttribute =
-                metacard.getAttribute(IndexedMtirpbAttribute.INDEXED_TARGET_LOCATION.getAttributeDescriptor()
-                        .getName());
+    private void transformTargetLocation(Metacard metacard) {
+        String locationString = formatTargetLocation(metacard);
+
+        try {
+            LOGGER.debug("Formatted Target Location(s) = " + locationString);
+
+            if (locationString != null) {
+                // validate the wkt
+                WKTReader wktReader = new WKTReader(geometryFactory);
+                Geometry geometry = wktReader.read(locationString);
+
+                LOGGER.debug("Setting the metacard attribute [{}, {}]", Core.LOCATION,
+                        geometry.toText());
+                metacard.setAttribute(new AttributeImpl(Core.LOCATION, geometry.toText()));
+            }
+
+        } catch (ParseException e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
+
+    private String formatTargetLocation(Metacard metacard) {
+        Attribute locationAttribute = metacard.getAttribute(
+                IndexedMtirpbAttribute.INDEXED_TARGET_LOCATION.getAttributeDescriptor().getName());
 
         if (locationAttribute != null) {
             StringBuilder stringBuilder = new StringBuilder("MULTIPOINT (");
 
-            locationAttribute.getValues()
-                    .stream()
-                    .forEach(value -> {
-                        parseLocation(stringBuilder, value.toString());
-                    });
+            locationAttribute.getValues().stream().forEach(value -> {
+                parseLocation(stringBuilder, value.toString());
+                stringBuilder.append(",");
+            });
 
             stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(","));
             stringBuilder.append(")");
             return stringBuilder.toString();
+        }
+
+        return null;
+    }
+
+    private void transformAircraftLocation(Metacard metacard) {
+
+        String aircraftLocation = formatAircraftLocation(metacard);
+
+        try {
+            LOGGER.debug("Formatted Aircraft Location = " + aircraftLocation);
+
+            if (aircraftLocation != null) {
+                // validate the wkt
+                WKTReader wktReader = new WKTReader(geometryFactory);
+                Geometry geometry = wktReader.read(aircraftLocation);
+
+                LOGGER.debug("Setting the metacard attribute [{}, {}]", Isr.DWELL_LOCATION,
+                        aircraftLocation);
+                metacard.setAttribute(new AttributeImpl(Isr.DWELL_LOCATION, aircraftLocation));
+            }
+
+        } catch (ParseException e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
+
+    private String formatAircraftLocation(Metacard metacard) {
+        Attribute aircraftLocation = metacard
+                .getAttribute(MtirpbAttribute.AIRCRAFT_LOCATION.getAttributeDescriptor().getName());
+
+        if (aircraftLocation != null
+                && StringUtils.isNotEmpty(aircraftLocation.getValue().toString())) {
+
+            String unformattedAircraftLocation = aircraftLocation.getValue().toString();
+
+            StringBuilder sb = new StringBuilder("POINT (");
+            parseLocation(sb, unformattedAircraftLocation);
+            sb.append(")");
+
+            return sb.toString();
         }
 
         return null;
@@ -148,11 +191,11 @@ public class NitfGmtiTransformer extends SegmentHandler {
             String lon = matcher.group(1);
             String lat = matcher.group(2);
 
-            stringBuilder.append(String.format("%s %s,", lon, lat));
+            stringBuilder.append(String.format("%s %s", lon, lat));
         }
     }
 
-    public void setWktReader(WKTReader wktReader) {
-        this.wktReader = wktReader;
+    public void setGeometryFactory(GeometryFactory geometryFactory) {
+        this.geometryFactory = geometryFactory;
     }
 }
