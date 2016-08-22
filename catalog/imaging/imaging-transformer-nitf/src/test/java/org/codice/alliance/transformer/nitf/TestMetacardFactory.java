@@ -35,9 +35,9 @@ public class TestMetacardFactory {
 
     private static final String TEST_ID = "101";
 
-    private static final String IMAGE_METACARD = "nitf";
+    private static final String IMAGE_METACARD = "isr.image";
 
-    private static final String GMTI_METACARD = "gmti";
+    private static final String GMTI_METACARD = "isr.gmti";
 
     List<MetacardType> metacardTypeList = new ArrayList<>();
 

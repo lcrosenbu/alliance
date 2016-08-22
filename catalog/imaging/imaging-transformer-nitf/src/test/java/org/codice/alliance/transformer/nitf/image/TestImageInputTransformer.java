@@ -60,7 +60,7 @@ public class TestImageInputTransformer {
 
     private MetacardFactory metacardFactory = null;
 
-    private static final String IMAGE_METACARD = "nitf";
+    private static final String IMAGE_METACARD = "isr.image";
 
     List<MetacardType> metacardTypeList = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class TestImageInputTransformer {
         validateDate(metacard, metacard.getEffectiveDate(), "1997-12-17 10:26:30");
         validateDate(metacard, metacard.getModifiedDate(), "1997-12-17 10:26:30");
         assertThat(metacard.getMetacardType()
-                .getName(), is("nitf"));
+                .getName(), is("isr.image"));
         assertThat(
                 "Checks an uncompressed 1024x1024 8 bit mono image with GEOcentric data. Airfield",
                 is(metacard.getTitle()));

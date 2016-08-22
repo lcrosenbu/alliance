@@ -55,7 +55,7 @@ public class TestNitfGmtiTransformer {
 
     private NitfGmtiTransformer nitfGmtiTransformer;
 
-    private static final String GMTI_METACARD = "gmti";
+    private static final String GMTI_METACARD = "isr.gmti";
 
     List<MetacardType> metacardTypeList = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class TestNitfGmtiTransformer {
         validateDate(metacard.getEffectiveDate(), "2016-06-22 23:39:22");
         validateDate(metacard.getModifiedDate(), "2016-06-22 23:39:22");
         assertThat(metacard.getMetacardType()
-                .getName(), is("gmti"));
+                .getName(), is("isr.gmti"));
 
         assertThat(metacard.getAttribute(MtirpbAttribute.NUMBER_OF_VALID_TARGETS.getAttributeDescriptor()
                 .getName())

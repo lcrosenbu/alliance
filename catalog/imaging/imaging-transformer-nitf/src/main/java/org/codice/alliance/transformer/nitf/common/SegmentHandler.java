@@ -44,8 +44,9 @@ public class SegmentHandler {
         AttributeDescriptor descriptor = attribute.getAttributeDescriptor();
 
         if (descriptor == null) {
-            LOGGER.error("Could not set metacard attribute " + attribute.getLongName()
-                    + " since it does not belong to this metacard type");
+            LOGGER.warn(
+                    "Could not set metacard attribute {} since it does not belong to this metacard type",
+                    attribute.getLongName());
             return;
         }
 
@@ -56,7 +57,7 @@ public class SegmentHandler {
 
         if (value != null) {
             Attribute catalogAttribute = populateAttribute(metacard, descriptor.getName(), value);
-            LOGGER.debug("Setting the metacard attribute [{}, {}]", descriptor.getName(), value);
+            LOGGER.trace("Setting the metacard attribute [{}, {}]", descriptor.getName(), value);
             metacard.setAttribute(catalogAttribute);
         }
     }

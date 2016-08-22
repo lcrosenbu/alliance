@@ -92,6 +92,7 @@
             <entry key="title" value="Chip image..."/>
             <entry key="description"
                    value="Converts an overview image to a chip."/>
+            <entry key="generateActionProvider" value="false"/>
         </service-properties>
     </service>
 

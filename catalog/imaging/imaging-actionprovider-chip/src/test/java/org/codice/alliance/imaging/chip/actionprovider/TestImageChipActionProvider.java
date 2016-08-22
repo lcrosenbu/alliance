@@ -18,72 +18,87 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.codice.ddf.configuration.SystemBaseUrl;
 import org.junit.Before;
 import org.junit.Test;
 
 import ddf.action.Action;
+import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
+import ddf.catalog.data.impl.MetacardTypeImpl;
+import ddf.catalog.data.impl.types.CoreAttributes;
+import ddf.catalog.data.types.Core;
 
 public class TestImageChipActionProvider {
-
-    private static final String ZIP_CONTENT_TYPE = "application/zip";
 
     private static final String ID = "12345";
 
     private static final String SOURCE = "alliance.distribution";
+    
+    private static final String NITF_IMAGE_METACARD_TYPE = "isr.image";
 
     private static final String LOCATION =
-            "POLYGON((0.1234 2.222, 0.4444 1.222, 0.1234 1.222, 0.1234 2.222, 0.1234 2.222))";
+            "POLYGON ((0.1234 2.222, 0.4444 1.222, 0.1234 1.222, 0.1234 2.222, 0.1234 2.222))";
 
     private ImagingChipActionProvider imagingChipActionProvider;
 
-    private MetacardImpl metacard;
+    private MetacardImpl imageMetacard;
 
     @Before
     public void setUp() {
         imagingChipActionProvider = new ImagingChipActionProvider();
-        metacard = new MetacardImpl();
-        metacard.setContentTypeName(ImagingChipActionProvider.NITF_CONTENT_TYPE);
-        metacard.setId(ID);
-        metacard.setSourceId(SOURCE);
-        metacard.setLocation(LOCATION);
+
+        imageMetacard = new MetacardImpl();
+        imageMetacard.setType(new MetacardTypeImpl(NITF_IMAGE_METACARD_TYPE,
+                Arrays.asList(new CoreAttributes())));
+        imageMetacard.setId(ID);
+        imageMetacard.setSourceId(SOURCE);
+        imageMetacard.setLocation(LOCATION);
+        imageMetacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI,
+                "content:73baa01ad925463b962084477d19fde0#original"));
     }
 
     @Test
-    public void testCanHandleNullMetacard() {
+    public void testDoesNotHandleNullMetacard() {
         assertThat(imagingChipActionProvider.canHandle(null), is(false));
     }
 
     @Test
-    public void testCanHandleInvalidMetacard() {
+    public void testDoesNotHandleInvalidMetacard() {
         assertThat(imagingChipActionProvider.canHandle(new Object()), is(false));
     }
 
     @Test
-    public void testCanHandleInvalidLocationOnMetacard() {
-        metacard.setLocation(null);
-        assertThat(imagingChipActionProvider.canHandle(metacard), is(false));
+    public void testDoesNotHandleNonImageryMetacard() {
+        imageMetacard.setType(new MetacardTypeImpl("Non Imagery MetacardType",
+                Arrays.asList(new CoreAttributes())));
+        assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(false));
     }
 
     @Test
-    public void testCanHandleNullContentTypeMetacard() {
-        MetacardImpl metacard = new MetacardImpl();
-        assertThat(imagingChipActionProvider.canHandle(metacard), is(false));
+    public void testDoesNotHandleNoLocationOnMetacard() {
+        imageMetacard.setLocation(null);
+        assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(false));
     }
 
     @Test
-    public void testCanHandleNonImageryMetacard() {
-        MetacardImpl metacard = new MetacardImpl();
-        metacard.setContentTypeName(ZIP_CONTENT_TYPE);
-        assertThat(imagingChipActionProvider.canHandle(metacard), is(false));
+    public void testDoesNotHandleInvalidLocationOnMetacard() {
+        imageMetacard.setLocation("BADWKT (0 0)");
+        assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(false));
+    }
+
+    @Test
+    public void testDoesNotHandleNoOriginalDerivedResource() {
+        imageMetacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI,
+                "content:73baa01ad925463b962084477d19fde0#NotOriginal"));
+        assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(false));
     }
 
     @Test
     public void testCanHandleImageryMetacard() {
-        assertThat(imagingChipActionProvider.canHandle(metacard), is(true));
+        assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(true));
     }
 
     @Test
@@ -98,21 +113,13 @@ public class TestImageChipActionProvider {
 
     @Test
     public void testGetActionsCanNotHandleMetacard() {
-        metacard.setLocation(null);
-        assertThat(imagingChipActionProvider.getActions(metacard), hasSize(0));
-    }
-
-    @Test
-    public void testGetActionsUnsupportedProtocolOnMetacard() {
-        String protocol = SystemBaseUrl.getProtocol();
-        System.setProperty("org.codice.ddf.system.protocol", "udp://");
-        assertThat(imagingChipActionProvider.getActions(metacard), hasSize(0));
-        System.setProperty("org.codice.ddf.system.protocol", protocol);
+        imageMetacard.setLocation(null);
+        assertThat(imagingChipActionProvider.getActions(imageMetacard), hasSize(0));
     }
 
     @Test
     public void testGetActionsMetacard() {
-        List<Action> actions = imagingChipActionProvider.getActions(metacard);
+        List<Action> actions = imagingChipActionProvider.getActions(imageMetacard);
         assertThat(actions, hasSize(1));
 
         Action action = actions.get(0);
@@ -120,8 +127,7 @@ public class TestImageChipActionProvider {
         assertThat(action.getDescription(), is(ImagingChipActionProvider.DESCRIPTION));
         assertThat(action.getTitle(), is(ImagingChipActionProvider.TITLE));
 
-        String url = action.getUrl()
-                .toString();
+        String url = action.getUrl().toString();
         assertThat(url, containsString(ImagingChipActionProvider.PATH));
         assertThat(url, containsString("id=" + ID));
         assertThat(url, containsString("source=" + SOURCE));

@@ -12,11 +12,17 @@
  *
  **/
  -->
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+           http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+           http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+           http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
     <bean id="imageMetacardType"
           class="ddf.catalog.data.impl.MetacardTypeImpl">
-        <argument value="nitf"/>
+        <argument value="isr.image"/>
         <argument>
             <list>
                 <bean class="ddf.catalog.data.impl.types.AssociationsAttributes"/>
@@ -37,7 +43,7 @@
 
     <bean id="gmtiMetacardType"
           class="ddf.catalog.data.impl.MetacardTypeImpl">
-        <argument value="gmti"/>
+        <argument value="isr.gmti"/>
         <argument>
             <list>
                 <bean class="ddf.catalog.data.impl.types.AssociationsAttributes"/>
@@ -131,7 +137,11 @@
         </route>
     </camelContext>
 
-    <bean id="plugin" class="org.codice.alliance.transformer.nitf.image.NitfPreStoragePlugin"/>
+    <bean id="plugin" class="org.codice.alliance.transformer.nitf.image.NitfPreStoragePlugin">
+        <cm:managed-properties persistent-id="NITF_Input_Transformer"
+                               update-strategy="container-managed"/>
+        <property name="maxSideLength" value="1024"/>
+    </bean>
 
     <service ref="transformer" interface="ddf.catalog.transform.InputTransformer">
         <service-properties>
@@ -151,13 +161,13 @@
 
     <service ref="imageMetacardType" interface="ddf.catalog.data.MetacardType">
         <service-properties>
-            <entry key="name" value="image"/>
+            <entry key="name" value="isr.image"/>
         </service-properties>
     </service>
 
     <service ref="gmtiMetacardType" interface="ddf.catalog.data.MetacardType">
         <service-properties>
-            <entry key="name" value="gmti"/>
+            <entry key="name" value="isr.gmti"/>
         </service-properties>
     </service>
 

@@ -14,19 +14,30 @@
 package org.codice.alliance.imaging.chip.actionprovider;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codice.ddf.configuration.SystemBaseUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+
 import ddf.action.Action;
 import ddf.action.MultiActionProvider;
 import ddf.action.impl.ActionImpl;
+import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
+import ddf.catalog.data.types.Core;
 
 public class ImagingChipActionProvider implements MultiActionProvider {
 
@@ -34,14 +45,17 @@ public class ImagingChipActionProvider implements MultiActionProvider {
 
     public static final String TITLE = "Chip Image";
 
-    public static final String DESCRIPTION =
-            "Opens a new window to enter the boundaries of an image chip for a Metacard.";
+    public static final String DESCRIPTION = "Opens a new window to enter the boundaries of an image chip for a Metacard.";
 
     public static final String PATH = "/chipping/chipping.html";
 
     public static final String ID = "catalog.data.metacard.image.chipping";
 
-    public static final String NITF_CONTENT_TYPE = "image/nitf";
+    private static final String NITF_IMAGE_METACARD_TYPE = "isr.image";
+
+    public static final String ORIGINAL_QUALIFIER = "original";
+
+    private GeometryFactory geometryFactory = new GeometryFactory();
 
     @Override
     public <T> List<Action> getActions(T input) {
@@ -56,16 +70,20 @@ public class ImagingChipActionProvider implements MultiActionProvider {
             URL url;
             String chipPath = null;
             try {
-                chipPath =
-                        SystemBaseUrl.getBaseUrl() + PATH + "?id=" + metacard.getId() + "&source="
-                                + metacard.getSourceId();
+                chipPath = String.format("%1s%2s?id=%3s&source=%4s",
+                        SystemBaseUrl.getBaseUrl(),
+                        PATH,
+                        metacard.getId(),
+                        metacard.getSourceId());
                 url = new URL(chipPath);
             } catch (MalformedURLException e) {
                 LOGGER.debug("Invalid URL for chipping path : {}", chipPath, e);
                 return new ArrayList<>();
             }
-            return Arrays.asList(new ActionImpl(getId(), TITLE, DESCRIPTION, url));
+
+            return Collections.singletonList(new ActionImpl(getId(), TITLE, DESCRIPTION, url));
         }
+
         return new ArrayList<>();
     }
 
@@ -76,14 +94,61 @@ public class ImagingChipActionProvider implements MultiActionProvider {
 
     @Override
     public <T> boolean canHandle(T subject) {
+        boolean canHandle = false;
+
         if (subject instanceof Metacard) {
             Metacard metacard = (Metacard) subject;
-            String contentTypeName = metacard.getContentTypeName();
-            if (NITF_CONTENT_TYPE.equals(contentTypeName) && metacard.getLocation() != null) {
+
+            boolean isImageNitf = NITF_IMAGE_METACARD_TYPE
+                    .equals(metacard.getMetacardType().getName());
+            boolean hasLocation = hasValidLocation(metacard.getLocation());
+            boolean hasDerivedImage = hasOriginalDerivedResource(metacard);
+
+            canHandle = isImageNitf && hasLocation && hasDerivedImage;
+        }
+
+        return canHandle;
+    }
+
+    private boolean hasOriginalDerivedResource(Metacard metacard) { 
+        Attribute attribute = metacard.getAttribute(Core.DERIVED_RESOURCE_URI);
+
+        return Stream.of(attribute)
+                .filter(Objects::nonNull)
+                .flatMap(a -> a.getValues().stream())
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .anyMatch(this::hasOriginalQualifier);
+    }
+
+    private boolean hasOriginalQualifier(String uriString) {
+        try {
+            URI derivedResourceUri = new URI(uriString);
+
+            // find the #original URI fragment
+            if (ORIGINAL_QUALIFIER.equals(derivedResourceUri.getFragment())) {
                 return true;
             }
+        } catch (URISyntaxException use) {
+            LOGGER.debug("Could not parse URI string [{}]", uriString);
         }
         return false;
     }
-}
 
+    private boolean hasValidLocation(String location) {
+        boolean hasValidLocation = false;
+
+        if (StringUtils.isNotBlank(location)) {
+            try {
+                // parse the WKT location to determine if it has valid format
+                WKTReader wktReader = new WKTReader(geometryFactory);
+                wktReader.read(location);
+                hasValidLocation = true;
+            } catch (ParseException e) {
+                LOGGER.debug("Location [{}] is invalid, cannot chip this image", location);
+            }
+        }
+
+        return hasValidLocation;
+    }
+}
