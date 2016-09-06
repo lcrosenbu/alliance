@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codice.alliance.transformer.nitf.MetacardFactory;
 import org.codice.imaging.nitf.core.common.NitfFormatException;
 import org.codice.imaging.nitf.fluent.NitfParserInputFlow;
@@ -69,6 +70,9 @@ public class NitfPreStoragePlugin implements PreCreateStoragePlugin, PreUpdateSt
     private static final String ORIGINAL = "original";
 
     private static final String DERIVED_IMAGE_FILENAME_PATTERN = "%s-%s.%s";
+
+    // non-word characters equivalent to [^a-zA-Z0-9_]
+    private static final String INVALID_FILENAME_CHARACTER_REGEX = "[\\W]";
 
     private static final double DEFAULT_MAX_SIDE_LENGTH = 1024.0;
 
@@ -207,9 +211,18 @@ public class NitfPreStoragePlugin implements PreCreateStoragePlugin, PreUpdateSt
         return null;
     }
 
-    private String buildDerivedImageTitle(String title, String qualifier) {
+    String buildDerivedImageTitle(String title, String qualifier) {
         String rootFileName = FilenameUtils.getBaseName(title);
-        return String.format(DERIVED_IMAGE_FILENAME_PATTERN, qualifier, rootFileName, JPG);
+
+        // title must contain some alphanumeric, human readable characters, or use default filename
+        if (StringUtils.isNotBlank(rootFileName)
+                && StringUtils.isNotBlank(rootFileName.replaceAll("[^A-Za-z0-9]", ""))) {
+            String strippedFilename = rootFileName.replaceAll(INVALID_FILENAME_CHARACTER_REGEX, "");
+            return String.format(DERIVED_IMAGE_FILENAME_PATTERN, qualifier, strippedFilename, JPG)
+                    .toLowerCase();
+        }
+
+        return String.format("%s.%s", qualifier, JPG).toLowerCase();
     }
 
     private byte[] scaleImage(final BufferedImage bufferedImage, int width, int height)
