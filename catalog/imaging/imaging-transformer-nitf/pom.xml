@@ -109,6 +109,14 @@
             <artifactId>jai-imageio-jpeg2000</artifactId>
             <version>${jpeg2000.version}</version>
         </dependency>
+
+        <!--Spock dependencies-->
+        <dependency>
+            <groupId>ddf.lib</groupId>
+            <artifactId>spock-shaded</artifactId>
+            <version>${ddf.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
