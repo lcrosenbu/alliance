@@ -12,7 +12,7 @@
  /*global document,Image*/
 
 var source, id, canvas, context;
-var overviewUrl, rect, imageObj, drag;
+var overviewUrl, rect, imageObj, drag, canvasRect;
 
 function setUrlParameters() {
     var pageUrl = window.location.search.substring(1);
@@ -30,13 +30,16 @@ function setUrlParameters() {
 }
 
 function mouseDown(e) {
-    rect.startX = e.pageX - this.offsetLeft;
-    rect.startY = e.pageY - this.offsetTop;
-    drag = true;
+    canvasRect = this.getBoundingClientRect();
+
+    rect.startX = e.pageX - canvasRect.left;
+    rect.startY = e.pageY - canvasRect.top;
+
+    setEditMode(true);
 }
 
 function mouseUp() {
-    drag = false;
+    setEditMode(false);
 }
 
 function draw() {
@@ -45,12 +48,14 @@ function draw() {
     context.strokeStyle="#f0e786";
     context.rect(rect.startX, rect.startY, rect.w, rect.h);
     context.stroke();
+
+    $('.chip-image').removeClass('disabled');
 }
 
 function mouseMove(e) {
     if (drag) {
-        rect.w = (e.pageX - this.offsetLeft) - rect.startX;
-        rect.h = (e.pageY - this.offsetTop) - rect.startY ;
+        rect.w = (e.pageX - canvasRect.left) - rect.startX;
+        rect.h = (e.pageY - canvasRect.top) - rect.startY;
         context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height, 0, 0, canvas.width, canvas.height);
         draw();
     }
@@ -80,19 +85,34 @@ function setOnClickListeners() {
         var y = rect.startY
         var w = rect.w;
         var h = rect.h;
+
         var chipUrl = "/services/catalog/sources/" + source + "/" + id + "?transform=chip&qualifier=overview&x=" + x + "&y=" + y + "&w=" + w + "&h=" + h ;
         $('.chip-image').attr('href',chipUrl);
     });
 
     $('.reset').on('click', function() {
         drawImage(overviewUrl);
+        $('.chip-image').addClass('disabled');
     });
+}
+
+function setEditMode(isEditing) {
+    if(isEditing) {
+        drag = true;
+        $('canvas').attr('style', "cursor: se-resize;");
+    } else {
+        drag = false;
+        $('canvas').attr('style', "cursor: default;");
+    }
 }
 
 $(document).ready(function() {
     setUrlParameters();
     drawImage(overviewUrl);
     setOnClickListeners();
+
+    $('.chip-image').addClass('disabled');
 });
+
 
 

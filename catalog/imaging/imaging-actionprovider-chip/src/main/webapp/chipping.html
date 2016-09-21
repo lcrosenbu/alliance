@@ -22,16 +22,29 @@
 
         <script src="/chipping/lib/jquery/jquery.min.js"></script>
         <link rel="stylesheet" type="text/css" href="/chipping/lib/components-font-awesome/css/font-awesome.min.css">
-        <link href="css/index.css" rel="stylesheet">
-        <link href="/search/standard/css/index.css" rel="stylesheet">
         <link href="/chipping/lib/components-bootstrap/css/bootstrap.css" rel="stylesheet">
+        <link href="css/index.css" rel="stylesheet">
     </head>
 
     <body class="chipping-pane">
+        <div id="chip-header">
+            <h4 class="chip-title">Image Chipping</h4>
+            <p class="chip-label">Draw a bounding box to download as an image chip.</p>
+        </div>
+
         <div id="content">
-            <div><canvas id="canvas" width="1024" height="1024"></canvas></div>
             <div>
-                <a class="btn chip-image" download>Download</a><button class="btn reset">Reset</button>
+                <canvas id="canvas" width="1024" height="1024" />
+            </div>
+            <div>
+                <a class="btn chip-image is-primary" style="width:49%;" download>
+                    <i class="fa fa-download"></i>
+                    Download Chip
+                </a>
+                <button class="btn reset is-neutral" style="width:49%;">
+                    <i class="fa fa-undo"></i>
+                    Reset Drawing
+                </button>
             </div>
         </div>
 

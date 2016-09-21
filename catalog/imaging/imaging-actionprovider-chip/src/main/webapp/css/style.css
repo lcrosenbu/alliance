@@ -9,17 +9,233 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+
+
+.btn:hover {
+    color: white;
+}
+
+.customElement {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.is-neutral {
+  background: #3c6dd5;
+}
+.is-positive {
+  background: #428442;
+}
+.is-button {
+  cursor: pointer;
+  opacity: .6;
+}
+.is-button:hover {
+  opacity: 1;
+}
+.is-button.is-active {
+  opacity: 1;
+}
+
+a, button {
+  border: none;
+  outline: none;
+  background: none;
+  padding: 0px;
+  border-radius: 1px;
+}
+
+
+a.is-neutral, button.is-neutral {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 2rem;
+  padding: 0px;
+  line-height: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0);
+}
+a.is-neutral .fa, button.is-neutral .fa {
+  line-height: inherit;
+}
+a.is-neutral span, button.is-neutral span {
+  font-size: 2rem;
+}
+a.is-neutral:hover, button.is-neutral:hover {
+  background: rgba(48, 48, 48, 0.145);
+  box-shadow: 0px 0px 2px rgba(18, 18, 18, 0.2875);
+}
+a.is-neutral:focus, button.is-neutral:focus {
+  background: rgba(18, 18, 18, 0.2875);
+  border: 0px 0px 2px rgba(6, 6, 6, 0.525);
+}
+a.is-neutral.is-disabled, button.is-neutral.is-disabled,
+ba.is-neutral, utton.is-neutral:disabled {
+  background: rgba(255, 255, 255, 0.525);
+  cursor: not-allowed;
+}
+
+
+a.is-primary, button.is-primary {
+  background: #3c6dd5;
+}
+a.is-primary, button.is-primary {
+  color: white;
+  background: #3c6dd5;
+  font-size: 2rem;
+  padding: 0px;
+  line-height: 44px;
+  height: 44px;
+}
+button.is-primary .fa {
+  line-height: inherit;
+}
+button.is-primary span {
+  font-size: 2rem;
+}
+a.is-primary:hover, button.is-primary:hover {
+  background: #3662c0;
+  box-shadow: 0px 0px 2px #2d52a0;
+}
+a.is-primary:focus, button.is-primary:focus {
+  background: #2d52a0;
+  border: 0px 0px 2px #1e376b;
+}
+a.is-primary.is-disabled, button.is-primary.is-disabled,
+a.is-primary:disabled, button.is-primary:disabled {
+  background: #9eb6ea;
+  cursor: not-allowed;
+}
+
+
+.is-button-group {
+  white-space: nowrap;
+  font-size: 0px;
+}
+.is-button-group > * {
+  white-space: normal;
+}
+.is-button-group > button {
+  display: inline-block;
+  vertical-align: middle;
+}
+.is-button-group > * > * {
+  font-size: 14px;
+}
+.is-button-group > button {
+  box-shadow: 0px 0px 1px white;
+  overflow: hidden;
+}
+
+
+body.has-header #content,
+body.has-footer #content {
+  height: calc(100% - 20px);
+}
+body.has-header.has-footer #content {
+  height: calc(100% - 40px);
+}
+#content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  color: #ffffff;
+  background: #28282c;
+}
+body {
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+
+/*
 .chipping-pane {
-    color:white;
-    background-image:linear-gradient(to bottom,#252525,#252525);
+    color: #212125;
+    background-image: linear-gradient(to bottom, #212125, ##212125);
+}
+
+.chip-header {
+    background-image: linear-gradient(to bottom, #212125, ##212125);
+    background: #212125;
+}
+
+.chip-title, .chip-label {
+    background-image: linear-gradient(to bottom, #212125, ##212125);
+    background: #212125;
+    color: white;
+    padding: 0 0 0 1em;
+}
+
+.content {
+    color: #28282c;
+    background-image: linear-gradient(to bottom, #28282c, ##28282c);
 }
 
 .chip-image {
-    background-color:#2a9fd6;
-    color:white;
+    color: white;
+    background: #3c6dd5;
+    user-select: none;
 }
 
-.reset {
-    background-color:#575757;
-    color:white;
+
+.chip-image:hover {
+    background: #3662c0;
+    text-decoration: none;
 }
+
+.chip-image:focus {
+  background: #2d52a0;
+  text-decoration: none;
+}
+
+.chip-image:disabled {
+    background-color: #9eb6ea;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+.chip-image:active {
+    text-decoration: none;
+}
+
+
+.reset {
+    font-family: "Droid Sans";
+    color: #f2f2f2;
+    background: #666666;
+    border-color: #333333;
+    box-shadow: 0px 0px 2px #121212;
+}
+
+.reset:hover {
+    background: #333333;
+    box-shadow: 0px 0px 2px #121212;
+}
+
+.reset:focus {
+    background: #262626;
+    box-shadow: 0px 0px 2px #121212;
+}
+
+.btn:hover, .btn:focus {
+    color: #f2f2f2;
+    box-shadow: 0px 0px 2px #121212;
+}
+
+.btn.disabled, .btn[disabled]{
+    opacity: .2;
+}
+*/
+
