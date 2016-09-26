@@ -12,7 +12,7 @@
  /*global document,Image*/
 
 var source, id, canvas, context;
-var overviewUrl, rect, imageObj, drag, canvasRect;
+var overviewUrl, rect, imageObj, drag;
 
 function setUrlParameters() {
     var pageUrl = window.location.search.substring(1);
@@ -30,16 +30,14 @@ function setUrlParameters() {
 }
 
 function mouseDown(e) {
-    canvasRect = this.getBoundingClientRect();
+    rect.startX = e.pageX - this.offsetLeft;
+    rect.startY = e.pageY - this.offsetTop;
 
-    rect.startX = e.pageX - canvasRect.left;
-    rect.startY = e.pageY - canvasRect.top;
-
-    setEditMode(true);
+    toggleEditMode(true);
 }
 
 function mouseUp() {
-    setEditMode(false);
+    toggleEditMode(false);
 }
 
 function draw() {
@@ -54,8 +52,8 @@ function draw() {
 
 function mouseMove(e) {
     if (drag) {
-        rect.w = (e.pageX - canvasRect.left) - rect.startX;
-        rect.h = (e.pageY - canvasRect.top) - rect.startY;
+        rect.w = (e.pageX - this.offsetLeft) - rect.startX;
+        rect.h = (e.pageY - this.offsetTop) - rect.startY;
         context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height, 0, 0, canvas.width, canvas.height);
         draw();
     }
@@ -96,7 +94,7 @@ function setOnClickListeners() {
     });
 }
 
-function setEditMode(isEditing) {
+function toggleEditMode(isEditing) {
     if(isEditing) {
         drag = true;
         $('canvas').attr('style', "cursor: se-resize;");
