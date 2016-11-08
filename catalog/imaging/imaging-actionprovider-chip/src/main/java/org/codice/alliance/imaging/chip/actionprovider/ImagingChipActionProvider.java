@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.codice.ddf.configuration.SystemBaseUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,8 +127,9 @@ public class ImagingChipActionProvider implements MultiActionProvider {
         try {
             URI derivedResourceUri = new URI(uriString);
 
-            // find the #original URI fragment
-            if (ORIGINAL_QUALIFIER.equals(derivedResourceUri.getFragment())) {
+            // find the #original URI fragment for local or =original param for remote
+            if (ORIGINAL_QUALIFIER.equals(derivedResourceUri.getFragment()) ||
+                    ORIGINAL_QUALIFIER.equals(getQualifierForRemoteResource(uriString))) {
                 return true;
             }
         } catch (URISyntaxException use) {
@@ -150,5 +153,17 @@ public class ImagingChipActionProvider implements MultiActionProvider {
         }
 
         return hasValidLocation;
+    }
+
+    private String getQualifierForRemoteResource(String uriString) throws URISyntaxException {
+        final String QUALIFIER_KEY = "qualifier";
+
+        return URLEncodedUtils.parse(new URI(uriString), "UTF-8")
+                .stream()
+                .filter(pair -> QUALIFIER_KEY.equals(pair.getName()))
+                .map(NameValuePair::getValue)
+                .filter(value -> ORIGINAL_QUALIFIER.equals(value))
+                .findFirst()
+                .orElse(""); // default
     }
 }

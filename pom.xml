@@ -55,6 +55,8 @@
         <gem-maven-plugin.version>1.0.5</gem-maven-plugin.version>
         <asciidoctorj-pdf.version>1.5.0-alpha.11</asciidoctorj-pdf.version>
         <asciidoctor.source.highlighter>coderay</asciidoctor.source.highlighter>
+        <httpcore.version>4.4.5</httpcore.version>
+        <httpclient.version>4.5.2</httpclient.version>
         <!-- output directory for reports -->
         <project.report.output.directory>project-info</project.report.output.directory>
         <joda-time.version>2.2</joda-time.version>
