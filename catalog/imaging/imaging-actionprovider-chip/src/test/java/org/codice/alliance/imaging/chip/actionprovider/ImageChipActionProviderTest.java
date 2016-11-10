@@ -97,6 +97,20 @@ public class ImageChipActionProviderTest {
     }
 
     @Test
+    public void testCanHandleOriginalDerivedResource() {
+        imageMetacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI,
+                "https://example.com/download?transform=resource&qualifier=original"));
+        assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(true));
+    }
+
+    @Test
+    public void testDoesNotHandleNonOverviewDerivedResource() {
+        imageMetacard.setAttribute(new AttributeImpl(Core.DERIVED_RESOURCE_URI,
+                "https://example.com/download?transform=resource&qualifier=notoriginal"));
+        assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(false));
+    }
+
+    @Test
     public void testCanHandleImageryMetacard() {
         assertThat(imagingChipActionProvider.canHandle(imageMetacard), is(true));
     }

@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +57,8 @@ public class ImagingChipActionProvider implements MultiActionProvider {
     private static final String NITF_IMAGE_METACARD_TYPE = "isr.image";
 
     public static final String ORIGINAL_QUALIFIER = "original";
+
+    private static final String QUALIFIER_KEY = "qualifier";
 
     private GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -156,9 +159,7 @@ public class ImagingChipActionProvider implements MultiActionProvider {
     }
 
     private String getQualifierForRemoteResource(String uriString) throws URISyntaxException {
-        final String QUALIFIER_KEY = "qualifier";
-
-        return URLEncodedUtils.parse(new URI(uriString), "UTF-8")
+        return URLEncodedUtils.parse(new URI(uriString), StandardCharsets.UTF_8.name())
                 .stream()
                 .filter(pair -> QUALIFIER_KEY.equals(pair.getName()))
                 .map(NameValuePair::getValue)
